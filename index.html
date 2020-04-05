@@ -1,0 +1,26 @@
+---
+# Feel free to add content and custom Front Matter to this file.
+# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+---
+
+{%- for post in site.posts -%}
+<div>
+  <a href="{{ post.url }}">
+    <h1 class="title">{{post.title}}</h1>
+  </a>
+  {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+  <div class="subtitle">{{ post.date | date: date_format }}</div>
+
+  <div class="content">
+    {{ post.excerpt }}
+  </div>
+  <div class="has-text-right">
+    <a class="button  is-link is-rounded is-outlined" href="{{ post.url }}">
+      Continue reading &nbsp;
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  </div>
+</div>
+{%- endfor -%}

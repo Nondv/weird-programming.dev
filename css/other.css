@@ -1,0 +1,7 @@
+.content figure {
+  text-align: left; /* HACK: bulma centers it */
+}
+
+.has-margin-left-5 {
+  margin-left: 1.25rem;
+}
