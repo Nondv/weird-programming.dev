@@ -1,0 +1,21 @@
+language: ruby
+rvm:
+  - 2.6
+cache: bundler
+
+script:
+  - bundle
+  - bundle exec jekyll build
+  - echo weird-programming.club > _site/CNAME
+
+deploy:
+  provider: pages
+  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  committer-from-gh: true
+  skip-cleanup: true
+  keep-history: false
+  local-dir: _site
+  repo: Nondv/weird-programming.club
+  target-branch: built
+  on:
+    branch: master
