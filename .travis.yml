@@ -16,6 +16,6 @@ deploy:
   keep-history: false
   local-dir: _site
   repo: Nondv/weird-programming.club
-  target-branch: built
+  target-branch: gh-pages
   on:
     branch: master
