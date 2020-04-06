@@ -13,8 +13,9 @@
     <title>{{ page.title }}</title>
   </head>
   <body>
+    {% include navbar.html %}
+
     <div class="container">
-      {% include navbar.html %}
       {{ content }}
     </div>
   </body>
