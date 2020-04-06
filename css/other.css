@@ -9,3 +9,11 @@
 #navbar {
   margin-bottom: 1.25rem;
 }
+
+#footer {
+  margin-top: 1.25rem;
+}
+
+#footer img {
+  vertical-align: middle;
+}
