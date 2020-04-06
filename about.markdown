@@ -12,3 +12,7 @@ educational.
 
 Enjoy!
 
+
+If you want to write to this blog, go to the
+[github repo](https://github.com/Nondv/weird-programming.dev) and see the
+README.
