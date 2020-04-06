@@ -22,7 +22,7 @@ title: Weird programming club
 description: >- # this means to ignore newlines until "baseurl:"
   Programming blog with some weirdness to it.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://weird-programming.club" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://weird-programming.dev" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: Nondv
 github_username:  Nondv
 
@@ -41,6 +41,8 @@ defaults:
     values:
       layout: 'post'
       permalink: '/:categories/:title:output_ext'
+exclude:
+  - README.md
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
