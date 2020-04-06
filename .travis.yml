@@ -6,7 +6,7 @@ cache: bundler
 script:
   - bundle
   - bundle exec jekyll build
-  - echo weird-programming.club > _site/CNAME
+  - echo weird-programming.dev > _site/CNAME
 
 deploy:
   provider: pages
@@ -15,7 +15,7 @@ deploy:
   skip-cleanup: true
   keep-history: false
   local-dir: _site
-  repo: Nondv/weird-programming.club
+  repo: Nondv/weird-programming.dev
   target-branch: gh-pages
   on:
     branch: master
