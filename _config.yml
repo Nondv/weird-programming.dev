@@ -39,7 +39,7 @@ defaults:
   - scope:
       type: "posts"
     values:
-      layout: 'post'
+      layout: 'page'
       permalink: '/:categories/:title:output_ext'
 exclude:
   - README.md
