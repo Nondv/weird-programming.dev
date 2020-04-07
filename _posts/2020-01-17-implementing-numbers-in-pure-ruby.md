@@ -50,7 +50,7 @@ I believe we don’t really need `true` and `false` because we can use `nil` for
 
 One of the things I remember from my time at university is our professor showing
 us a way to implement natural numbers in terms of
-[Peano axioms](https://en.wikipedia.org/wiki/Peano_axioms during a set theory
+[Peano axioms](https://en.wikipedia.org/wiki/Peano_axioms) during a set theory
 lecture.
 
 Essentially, what we need is:
