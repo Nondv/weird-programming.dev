@@ -27,9 +27,17 @@
   <meta property="article:tag" content="pattern matching" />
   
 
-    <link rel="stylesheet" href="/css/bulma.min.css">
-    <link rel="stylesheet" href="/css/syntax-highlight/perldoc.css">
-    <link rel="stylesheet" href="/css/other.css">
+
+    <!-- Bulma -->
+    <link rel="preload" href="/css/bulma.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/bulma.min.css"></noscript>
+    <!-- Syntax highlight  -->
+    <link rel="preload" href="/css/syntax-highlight/perldoc.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/syntax-highlight/perldoc.css"></noscript>
+    <!-- Custom shit and hacks -->
+    <link rel="preload" href="/css/other.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/other.css"></noscript>
+
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <title>Implementing integer expressions in Haskell data types</title>
   </head>
