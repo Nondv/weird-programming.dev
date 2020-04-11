@@ -1,0 +1,8 @@
+<div class="is-size-5">
+  {% assign twitter_url = page | absolute_url | twitter_share_url | twitter_with_text: page.title | twitter_with_hashtags: 'weirdprogramming' %}
+  {% assign linkedin_url = page | absolute_url | linkedin_share_url %}
+  {% assign facebook_url = page | absolute_url | facebook_share_url %}
+  <a class="haas-text-black" href="{{twitter_url}}" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="{{linkedin_url}}" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="{{facebook_url}}" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
