@@ -2,6 +2,8 @@
 title:  Implementing numbers in "pure" Ruby
 categories: [oop]
 tags: [ruby, oop, numbers, object-oriented programming]
+description: >-
+  Let's implement our own numbers in Ruby without standard library functions
 ---
 
 *Originaly posted in [carwow blog on medium.com](https://medium.com/carwow-product-engineering/implementing-numbers-in-pure-ruby-1d35ee53ee70)*

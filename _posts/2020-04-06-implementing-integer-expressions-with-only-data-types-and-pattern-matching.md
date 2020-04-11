@@ -2,6 +2,9 @@
 title: Implementing integer expressions with only data types and pattern matching
 categories: [fp]
 tags: [haskell, functional programming, fp, data types, pattern matching]
+description: >-
+  Let's write our own integer expressions language using only data
+  types and pattern matching in haskell
 ---
 
 *Inspired by [Implementing numbers in "pure" Ruby]({%  post_url 2020-01-17-implementing-numbers-in-pure-ruby %})*

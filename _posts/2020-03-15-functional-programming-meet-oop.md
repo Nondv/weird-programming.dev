@@ -2,6 +2,7 @@
 title: Functional programming, meet OOP
 categories: [oop]
 tags: [functional programming, object-oriented programming, fp, oop, clojure]
+description: Implementing OOP in a functional programming language
 ---
 
 *Originally posted on [medium.com](https://medium.com/swlh/functional-programming-meet-oop-3dc12a14e38e)*

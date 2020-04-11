@@ -2,6 +2,7 @@
 title: Writing a small web service with Ruby, Rack, and functional programming
 categories: [fp]
 tags: [ruby, rack, fp, functional programming]
+description: Let's write a Ruby web service using pure lambdas and Rack
 ---
 
 *Originally posted on [medium.com](https://levelup.gitconnected.com/writing-a-small-web-service-with-ruby-rack-and-functional-programming-a16f802a19c0)*
