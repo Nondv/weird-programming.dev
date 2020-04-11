@@ -19,8 +19,8 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: .bundler
-        key: ${{ runner.os }}-bundler-${{ hashFiles('**/Gemfile.lock') }}
-        restore-keys: ${{ runner.os }}-bundler-
+        key: bundler-${{ runner.os }}-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: bundler-${{ runner.os }}-
     - name: Bundle install
       run: |
         gem install bundler:2.0.2
