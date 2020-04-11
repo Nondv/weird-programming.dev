@@ -33,6 +33,6 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@3.4.7
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        BRANCH: gh-actions-test
+        BRANCH: gh-pages
         FOLDER: _site
 
