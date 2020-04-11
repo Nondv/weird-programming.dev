@@ -9,6 +9,7 @@ source "https://rubygems.org"
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
 gem "jekyll", "~> 4.0.0"
+gem 'jekyll-sitemap'
 
 gem "sassc", '2.1.0' # 2.2 was causing problems with caching on github actions
 

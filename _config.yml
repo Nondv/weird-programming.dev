@@ -25,6 +25,8 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://weird-programming.dev" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: Nondv
 github_username:  Nondv
+plugins:
+  - jekyll-sitemap
 
 # Build settings
 excerpt_separator: '<!--more-->'
