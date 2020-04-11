@@ -1,5 +1,6 @@
 ---
 title: Writing a small web service with Ruby, Rack, and functional programming
+author_profile_url: https://nondv.wtf
 categories: [fp]
 tags: [ruby, rack, fp, functional programming]
 description: Let's write a Ruby web service using pure lambdas and Rack

@@ -37,6 +37,7 @@ defaults:
       type: "posts"
     values:
       layout: 'post'
+      is_post: true
       permalink: '/:categories/:title:output_ext'
 exclude:
   - README.md

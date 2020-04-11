@@ -1,5 +1,6 @@
 ---
 title:  Implementing numbers in "pure" Ruby
+author_profile_url: https://nondv.wtf
 categories: [oop]
 tags: [ruby, oop, numbers, object-oriented programming]
 description: >-

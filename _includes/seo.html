@@ -1,1 +1,17 @@
-<meta itemprop="description" name="description" content="{{page.description | default: site.description | truncate: 160 }}" />
+{% assign description = page.description | default: site.description | truncate: 160 %}
+<meta itemprop="description" name="description" content="{{ description }}" />
+<meta property="og:title" content="{{ page.title }}" />
+<meta property='og:site_name' content='{{ site.title }}' />
+<meta property="og:url" content="{{ page.url | absolute_url }}" />
+{% if page.is_post %}
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="{{ page.date | date: '%Y-%m-%d' }}" />
+  {% if page.author_profile_url -%}
+    <meta property="article:author" content="{{ page.author_profile_url }}" />
+  {%- endif %}
+  {% for tag in page.tags -%}
+    <meta property="article:tag" content="{{ tag }}" />
+  {% endfor -%}
+{%- else %}
+  <meta property="og:type" content="website" />
+{%- endif %}
