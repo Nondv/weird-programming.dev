@@ -7,8 +7,7 @@ title: Weird programming
   <a href="{{ post.url }}">
     <h1 class="title is-size-1">{{post.title}}</h1>
   </a>
-  {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-  <time class="subtitle">{{ post.date | date: date_format }}</time>
+  <div class="subtitle"><time>{{ post.date | date: "%-d %b %Y" }}</time></div>
 
   <div class="content">
     {{ post.excerpt }}
