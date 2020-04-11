@@ -21,7 +21,7 @@ jobs:
         -e JEKYLL_ENV=production \
         jekyll/builder:4.0 \
         /bin/bash -c "chmod 777 /srv/jekyll && jekyll build"
-        /bin/bash -c "echo weird-programming.dev > /srv/jekyll/_site/CNAME"
+        echo weird-programming.dev > ${{ github.workspace }}/_site/CNAME
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.4.7
       with:
