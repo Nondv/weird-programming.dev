@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://weird-programming.dev/oop/implementing-numbers-in-pure-ruby.html</loc>
+<lastmod>2020-01-17T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>https://weird-programming.dev/fp/writing-a-small-web-service-with-ruby-rack-and-fp.html</loc>
+<lastmod>2020-02-16T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>https://weird-programming.dev/oop/functional-programming-meet-oop.html</loc>
+<lastmod>2020-03-15T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>https://weird-programming.dev/fp/implementing-integer-expressions-with-only-data-types-and-pattern-matching.html</loc>
+<lastmod>2020-04-06T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>https://weird-programming.dev/about/</loc>
+</url>
+<url>
+<loc>https://weird-programming.dev/</loc>
+</url>
+</urlset>

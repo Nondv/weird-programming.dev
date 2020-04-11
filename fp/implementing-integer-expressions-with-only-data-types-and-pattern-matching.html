@@ -11,13 +11,27 @@
 </script>
 <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta itemprop="description" name="description" content="Let's write our own integer expressions language using only data types and pattern matching in haskell" />
+    
+<meta itemprop="description" name="description" content="Let's write our own integer expressions language using only data types and pattern matching in haskell" />
+<meta property="og:title" content="Implementing integer expressions in Haskell data types" />
+<meta property='og:site_name' content='Weird programming blog' />
+<meta property="og:url" content="https://weird-programming.dev/fp/implementing-integer-expressions-with-only-data-types-and-pattern-matching.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2020-04-06" />
+  <meta property="article:author" content="https://nondv.wtf" />
+  <meta property="article:tag" content="haskell" />
+  <meta property="article:tag" content="functional programming" />
+  <meta property="article:tag" content="fp" />
+  <meta property="article:tag" content="data types" />
+  <meta property="article:tag" content="pattern matching" />
+  
 
     <link rel="stylesheet" href="/css/bulma.min.css">
     <link rel="stylesheet" href="/css/syntax-highlight.css">
     <link rel="stylesheet" href="/css/other.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <title>Implementing integer expressions with only data types and pattern matching</title>
+    <title>Implementing integer expressions in Haskell data types</title>
   </head>
   <body>
     <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
@@ -47,12 +61,12 @@
 
 
     <div class="container">
-      <div class="title is-1">Implementing integer expressions with only data types and pattern matching</div>
+      <div class="title is-1">Implementing integer expressions in Haskell data types</div>
 <div class="is-size-5">
   
   
   
-  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html&text=Implementing+integer+expressions+with+only+data+types+and+pattern+matching&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html&text=Implementing+integer+expressions+in+Haskell+data+types&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
   <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
   <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
 </div>
@@ -403,7 +417,7 @@ further but maybe some other time.</p>
   
   
   
-  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html&text=Implementing+integer+expressions+with+only+data+types+and+pattern+matching&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html&text=Implementing+integer+expressions+in+Haskell+data+types&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
   <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
   <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
 </div>
