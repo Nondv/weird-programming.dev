@@ -371,4 +371,4 @@ and the result is -1.
 That was fun. Lots more to try though. I am planning to push this idea even
 further but maybe some other time.
 
-The code is available [here](https://github.com/Nondv/experiments/blob/master/integer_expressions_in_haskell/code.hs).
+[Complete source code](https://github.com/Nondv/experiments/blob/master/integer_expressions_in_haskell/code.hs).
