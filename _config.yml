@@ -27,9 +27,6 @@ twitter_username: Nondv
 github_username:  Nondv
 
 # Build settings
-# theme: minima
-plugins:
-  - jekyll-feed
 excerpt_separator: '<!--more-->'
 defaults:
   - scope:
