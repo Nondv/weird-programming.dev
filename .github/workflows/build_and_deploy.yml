@@ -11,20 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      JEKYLL_ENV: production
     steps:
     - uses: actions/checkout@v2
-    - name: Build
+    - uses: actions/cache@v1
+      with:
+        path: .bundler
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: ${{ runner.os }}-gems-
+    - name: Bundle install
       run: |
-        docker run \
-        -v ${{ github.workspace }}:/srv/jekyll \
-        -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-        -e JEKYLL_ENV=production \
-        jekyll/minimal:4.0 \
-        /bin/bash -c "chmod 777 /srv/jekyll && jekyll build"
+        bundle config path .bundler
+        bundle install --jobs 4 --retry 3
+    - name: Build
+      run: bundle exec jekyll build
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.4.7
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: gh-actions-test
-        FOLDER: ${{ github.workspace }}/_site # The folder the action should deploy.
+        FOLDER: _site
 
