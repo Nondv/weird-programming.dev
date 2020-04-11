@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta itemprop="description" name="description" content="Let's implement our own numbers in Ruby without standard library functions" />
+
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/syntax-highlight.css">
+    <link rel="stylesheet" href="/css/other.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Implementing numbers in "pure" Ruby</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-margin-left-5" href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Implementing numbers in "pure" Ruby</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fimplementing-numbers-in-pure-ruby.html&text=Implementing+numbers+in+%22pure%22+Ruby&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fimplementing-numbers-in-pure-ruby.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Foop%2Fimplementing-numbers-in-pure-ruby.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+<div class="content">
+  <p><em>Originaly posted in <a href="https://medium.com/carwow-product-engineering/implementing-numbers-in-pure-ruby-1d35ee53ee70">carwow blog on medium.com</a></em></p>
+
+<p>Object-Oriented Programming to me means that the system is divided into
+objects. An object is just an entity that has some state and some behaviour. You
+can make your object do something by sending it a message, hoping that it will
+understand you.</p>
+
+<p>For practical reasons, every language has some primitives; basic data types you
+can use to write your program. Even though Ruby is, supposedly, a pure OO
+language (everything is an object), it has some primitives nevertheless.</p>
+
+<p>For instance, numbers. They look like objects, they have methods and
+stuff. However, what are they really? 2 and 3 are different instances of the
+Integer class, so they are supposed to have a different state. But what is that
+state? Magic.</p>
+
+<p>Let’s try and implement numbers on our own, without magic. Just for fun.</p>
+
+<!--more-->
+
+<h1 id="ground-rules">Ground rules</h1>
+
+<p>So, I came up with this set of constraints:</p>
+
+<ol>
+  <li>We can’t use any of the basic types except <code class="highlighter-rouge">nil</code>, <code class="highlighter-rouge">true</code>, and <code class="highlighter-rouge">false</code>.</li>
+  <li>No Stdlib (duh).</li>
+  <li>Blocks are ok (just for some expressiveness, they won’t hurt).</li>
+  <li>Using the equality operator for objects is ok. This is to check if two given
+object links point to the same object.</li>
+  <li>Rules do not apply to tests because tests are just there to check if
+something works as intended.</li>
+  <li>Rules do not apply to the <code class="highlighter-rouge">#inspect</code> method since it serves only for
+demonstration purposes.</li>
+</ol>
+
+<p>Rule #1 is quite controversial. On the one hand, we are using magic
+primitives. On the other hand, I think that every program has to have logical
+expressions in order for it to be of any use. And we can’t have logical
+expressions without “falsey” entities (<code class="highlighter-rouge">nil</code> and <code class="highlighter-rouge">false</code>).</p>
+
+<p>I believe we don’t really need <code class="highlighter-rouge">true</code> and <code class="highlighter-rouge">false</code> because we can use <code class="highlighter-rouge">nil</code> for
+<code class="highlighter-rouge">false</code> and any object for <code class="highlighter-rouge">true</code>. However, why not? Just for expressiveness.</p>
+
+<h1 id="implementation-idea">Implementation idea</h1>
+
+<p>One of the things I remember from my time at university is our professor showing
+us a way to implement natural numbers in terms of
+<a href="https://en.wikipedia.org/wiki/Peano_axioms">Peano axioms</a> during a set theory
+lecture.</p>
+
+<p>Essentially, what we need is:</p>
+
+<ol>
+  <li>Some basic entity (it will represent zero in the natural numbers set).</li>
+  <li>Some function <code class="highlighter-rouge">next(x)</code> that returns the number after <code class="highlighter-rouge">x</code>.</li>
+</ol>
+
+<p>In set theory we can use:</p>
+
+<ol>
+  <li>Empty set <code class="highlighter-rouge">[]</code></li>
+  <li>The function that returns a 1-element set containing its argument:
+<code class="highlighter-rouge">next(s) = [s]</code></li>
+</ol>
+
+<p>So our natural numbers are presented as:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">0 = []</code></li>
+  <li><code class="highlighter-rouge">1 = [[]]</code></li>
+  <li><code class="highlighter-rouge">2 = [[[]]]</code></li>
+  <li>…</li>
+</ul>
+
+<p>The problem is, we don’t have sets at our disposal. Instead of them, we can use
+lists.</p>
+
+<h1 id="list--our-basic-data-structure">List — our basic data structure</h1>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">List</span>
+  <span class="c1"># @return [Object]</span>
+  <span class="nb">attr_reader</span> <span class="ss">:head</span>
+  <span class="c1"># @return [List]</span>
+  <span class="nb">attr_reader</span> <span class="ss">:tail</span>
+
+  <span class="no">EMPTY</span> <span class="o">=</span> <span class="n">new</span> <span class="c1"># HACK: at this point constructor hasn't been defined yet</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="no">EMPTY</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="no">TypeError</span> <span class="k">unless</span> <span class="n">tail</span><span class="p">.</span><span class="nf">is_a?</span><span class="p">(</span><span class="no">List</span><span class="p">)</span>
+
+    <span class="vi">@head</span> <span class="o">=</span> <span class="n">head</span>
+    <span class="vi">@tail</span> <span class="o">=</span> <span class="n">tail</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">self</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">empty?</span>
+    <span class="nb">self</span> <span class="o">==</span> <span class="no">EMPTY</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">inspect</span>
+    <span class="k">return</span> <span class="s1">'()'</span> <span class="k">if</span> <span class="n">empty?</span>
+
+    <span class="s1">'('</span> <span class="o">+</span> <span class="n">reduce</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="o">|</span> <span class="s2">"</span><span class="si">#{</span><span class="n">a</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">e</span><span class="p">.</span><span class="nf">inspect</span><span class="si">}</span><span class="s2">"</span> <span class="p">}[</span><span class="mi">2</span><span class="o">..-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">')'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>As you can see, I implemented <code class="highlighter-rouge">List</code> as a pair. The first element is some object
+and the second one is some other list. Notice that lists are immutable.</p>
+
+<p>I decided that every created node <strong>has to</strong> have a tail, except for the empty
+list which should be instantiated only once. In order to achieve that I had to
+use a hack, which I indicated with a comment.</p>
+
+<p>Now that we have our basic data structure, we can use it instead of sets for our
+implementation like this:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">0 = ()</code></li>
+  <li><code class="highlighter-rouge">1 = (())</code></li>
+  <li>…</li>
+</ul>
+
+<h1 id="natural-numbers">Natural numbers</h1>
+
+<p>Every number object will have an inner list representation as a state. So, the
+bare minimum looks like this:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NaturalNumber</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list_representation</span><span class="p">)</span>
+    <span class="vi">@list_representation</span> <span class="o">=</span> <span class="n">list_representation</span>
+  <span class="k">end</span>
+
+  <span class="no">ZERO</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="no">List</span><span class="o">::</span><span class="no">EMPTY</span><span class="p">)</span>
+  <span class="no">ONE</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="no">List</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="kp">nil</span><span class="p">,</span> <span class="no">List</span><span class="o">::</span><span class="no">EMPTY</span><span class="p">))</span>
+  <span class="no">TWO</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="no">List</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="kp">nil</span><span class="p">,</span> <span class="no">List</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="kp">nil</span><span class="p">,</span> <span class="no">List</span><span class="o">::</span><span class="no">EMPTY</span><span class="p">)))</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>But it’s no use to us. We can’t do anything with that. And what’s with all these
+<code class="highlighter-rouge">new(...)</code>? It’s completely impractical!</p>
+
+<p>In order to make this class useful, we need to define some <em>behaviour</em>.</p>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="some-utility-before-we-start">Some utility before we start</h3>
+
+<p>Let’s add some helper methods to <code class="highlighter-rouge">List</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">List</span>
+  <span class="k">def</span> <span class="nf">each</span>
+    <span class="n">list</span> <span class="o">=</span> <span class="nb">self</span>
+    <span class="k">until</span> <span class="n">list</span><span class="p">.</span><span class="nf">empty?</span>
+      <span class="k">yield</span> <span class="n">list</span><span class="p">.</span><span class="nf">head</span>
+      <span class="n">list</span> <span class="o">=</span> <span class="n">list</span><span class="p">.</span><span class="nf">tail</span>
+    <span class="k">end</span>
+
+    <span class="nb">self</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">initial_value</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">initial_value</span>
+    <span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span> <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>These will come in handy later.</p>
+
+<p>Also, we need to have an access to other list representations:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NaturalNumber</span>
+  <span class="kp">protected</span>
+  <span class="nb">attr_reader</span> <span class="ss">:list_representation</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>This is an interesting bit. Not everyone knows that <code class="highlighter-rouge">protected</code> in Ruby is
+different from the one in Java. In Java (and some other languages), protected
+methods are only accessible to child classes.</p>
+
+<p>In Ruby, <code class="highlighter-rouge">protected</code> means that this message can be sent from an object of the
+same class:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+  <span class="k">def</span> <span class="nf">test_protected</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">other</span><span class="p">.</span><span class="nf">protected_m</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">test_private</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">other</span><span class="p">.</span><span class="nf">private_m</span>
+  <span class="k">end</span>
+  <span class="kp">protected</span> <span class="k">def</span> <span class="nf">protected_m</span><span class="p">;</span> <span class="k">end</span>
+  <span class="kp">private</span> <span class="k">def</span> <span class="nf">private_m</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
+<span class="n">a1</span> <span class="o">=</span> <span class="no">A</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="no">A</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">a1</span><span class="p">.</span><span class="nf">test_protected</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span> <span class="c1"># ==&gt; nil</span>
+<span class="n">a1</span><span class="p">.</span><span class="nf">test_private</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span> <span class="c1"># ==&gt; NoMethodError</span>
+</code></pre></div></div>
+
+<h3 id="addition">Addition</h3>
+
+<p>If we think about it, each actual number equals the nesting level of an empty
+list. For 0 the nesting level is zero, 1 wraps an empty list once, 2 does it
+twice, and so on. So, to add two numbers we just need to increase the nesting
+level of one of them by the nesting level of the other:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">+</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+  <span class="no">NaturalNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+    <span class="n">other</span><span class="p">.</span><span class="nf">list_representation</span><span class="p">.</span><span class="nf">reduce</span><span class="p">(</span><span class="n">list_representation</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">list</span><span class="p">,</span> <span class="n">_</span><span class="o">|</span>
+      <span class="n">list</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="kp">nil</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="multiplication">Multiplication</h3>
+
+<p>What does <code class="highlighter-rouge">n * 5</code> mean? It means that we are <em>adding</em> <code class="highlighter-rouge">n</code> with itself five
+times. We already have a plus operator. Let’s use it:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">*</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+ <span class="n">other</span><span class="p">.</span><span class="nf">list_representation</span><span class="p">.</span><span class="nf">reduce</span><span class="p">(</span><span class="no">ZERO</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">_</span><span class="o">|</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">self</span> <span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="comparison-operators">Comparison operators</h3>
+
+<p>Again, we just need to compare the nesting levels:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">list_representation</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">other</span><span class="p">.</span><span class="nf">list_representation</span>
+
+    <span class="k">until</span> <span class="n">a</span><span class="p">.</span><span class="nf">empty?</span> <span class="o">||</span> <span class="n">b</span><span class="p">.</span><span class="nf">empty?</span>
+      <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="nf">tail</span>
+      <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="nf">tail</span>
+    <span class="k">end</span>
+
+    <span class="n">a</span><span class="p">.</span><span class="nf">empty?</span> <span class="o">&amp;&amp;</span> <span class="n">b</span><span class="p">.</span><span class="nf">empty?</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">&lt;</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">list</span> <span class="o">=</span> <span class="n">other</span><span class="p">.</span><span class="nf">list_representation</span>
+    <span class="n">list_representation</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span>
+      <span class="k">return</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">list</span><span class="p">.</span><span class="nf">empty?</span>
+      <span class="n">list</span> <span class="o">=</span> <span class="n">list</span><span class="p">.</span><span class="nf">tail</span>
+    <span class="k">end</span>
+
+    <span class="o">!</span><span class="n">list</span><span class="p">.</span><span class="nf">empty?</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Other operators can be defined in terms of the basic ones:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">def</span> <span class="nf">&lt;</span><span class="o">=</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="nb">self</span> <span class="o">&lt;</span> <span class="n">other</span> <span class="o">||</span> <span class="nb">self</span> <span class="o">==</span> <span class="n">other</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">&gt;</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">other</span> <span class="o">&lt;</span> <span class="nb">self</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">&gt;</span><span class="o">=</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">other</span> <span class="o">&lt;=</span> <span class="nb">self</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="subtraction">Subtraction</h3>
+
+<p>Subtraction is a tricky one because it’s not defined on the whole set of natural
+numbers. You can’t subtract a bigger number from a smaller one.
+But it may become useful:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">def</span> <span class="nf">-</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="no">ArgumentError</span> <span class="k">if</span> <span class="n">other</span> <span class="o">&gt;</span> <span class="nb">self</span>
+    <span class="no">NaturalNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+      <span class="n">other</span><span class="p">.</span><span class="nf">list_representation</span><span class="p">.</span><span class="nf">reduce</span><span class="p">(</span><span class="n">list_representation</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">_</span><span class="o">|</span> <span class="n">a</span><span class="p">.</span><span class="nf">tail</span> <span class="p">}</span>
+    <span class="p">)</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="usage">Usage</h2>
+
+<p>Okay, now we have defined basic operations. What next? How do we use them? I
+don’t want to initialize numbers with lists every time I need one.</p>
+
+<p>Well, the beauty of it is that by having the number <code class="highlighter-rouge">1</code> and the <code class="highlighter-rouge">+</code> operation, we
+can create any number we want without having to explicitly provide state:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">two</span> <span class="o">=</span> <span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ONE</span> <span class="o">+</span> <span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ONE</span>
+<span class="n">three</span> <span class="o">=</span> <span class="n">two</span> <span class="o">+</span> <span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ONE</span>
+
+<span class="c1"># Don't forget we have multiplication as well!</span>
+<span class="n">fifty_four</span> <span class="o">=</span> <span class="n">three</span> <span class="o">*</span> <span class="n">three</span> <span class="o">*</span> <span class="n">three</span> <span class="o">*</span> <span class="n">two</span>
+</code></pre></div></div>
+
+<p>As you can see, there can be multiple instances for the same number. But that’s
+okay because they are equivalent in terms of usage.</p>
+
+<p>All right. We have natural numbers and we can even do some math with it. But so
+what? We need integers!</p>
+
+<h1 id="integers">Integers</h1>
+
+<p>Integers are exactly the same as natural numbers, but for every natural number
+they have an additional negative one: -1, -2, -3.</p>
+
+<p>So, that said, we can implement integers by using naturals:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">IntegerNumber</span>
+  <span class="nb">attr_reader</span> <span class="ss">:value</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">natural_number</span><span class="p">,</span> <span class="n">is_negative</span> <span class="o">=</span> <span class="kp">false</span><span class="p">)</span>
+    <span class="vi">@value</span> <span class="o">=</span> <span class="n">natural_number</span>
+    <span class="vi">@is_negative</span> <span class="o">=</span> <span class="vi">@value</span><span class="p">.</span><span class="nf">zero?</span> <span class="p">?</span> <span class="kp">false</span> <span class="p">:</span> <span class="n">is_negative</span>
+  <span class="k">end</span>
+
+  <span class="no">ONE</span> <span class="o">=</span> <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ONE</span><span class="p">)</span>
+  <span class="no">ZERO</span> <span class="o">=</span> <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ZERO</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">inspect</span>
+    <span class="s2">"IntegerNumber&lt;</span><span class="si">#{</span><span class="s1">'-'</span> <span class="k">if</span> <span class="n">negative?</span><span class="si">}#{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="methods-1">Methods</h2>
+
+<p>I will not bother you with all of them, I will just show a couple to give you an
+idea:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># This is the most complicated one</span>
+  <span class="k">def</span> <span class="nf">+</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">return</span> <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span><span class="p">,</span> <span class="n">negative?</span><span class="p">)</span> <span class="k">if</span> <span class="n">negative?</span> <span class="o">==</span> <span class="n">other</span><span class="p">.</span><span class="nf">negative?</span>
+
+    <span class="k">if</span> <span class="n">negative?</span>
+      <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span>
+        <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="nf">value</span> <span class="o">-</span> <span class="n">value</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">else</span>
+      <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span>
+        <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="nf">value</span> <span class="o">-</span> <span class="n">value</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="n">negative?</span> <span class="o">==</span> <span class="n">other</span><span class="p">.</span><span class="nf">negative?</span> <span class="o">&amp;&amp;</span> <span class="n">value</span> <span class="o">==</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">&lt;</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">negative?</span>
+      <span class="n">other</span><span class="p">.</span><span class="nf">negative?</span> <span class="p">?</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span><span class="p">)</span> <span class="p">:</span> <span class="kp">true</span>
+    <span class="k">else</span>
+      <span class="n">other</span><span class="p">.</span><span class="nf">negative?</span> <span class="p">?</span> <span class="kp">false</span> <span class="p">:</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">.</span><span class="nf">value</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">-@</span>
+    <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">!</span><span class="n">negative?</span><span class="p">)</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>As you can see, adding an additional element to the state has complicated things
+drastically. Even though basic operations were already implemented on natural
+numbers, I still had to add a lot of logic on top of it. Big states are bad,
+children!</p>
+
+<h1 id="whats-next">What’s next?</h1>
+
+<p>Let’s analyse what we’ve done so far. One of the things I found interesting is
+the number of methods inside our classes. It’s an interesting question if the
+class <code class="highlighter-rouge">IntegerNumber</code> has many responsibilities or not.</p>
+
+<p>It really does have a lot of methods. Right now we are facing the “fat models”
+problem from Rails. What can we do? We can extract the behaviour to other
+classes. I think it’s a good design when data and behaviour are divided. Let’s
+try a bit:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">IntegerNumber</span>
+  <span class="k">class</span> <span class="nc">Add</span>
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+      <span class="n">new</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+      <span class="k">return</span> <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="nf">value</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="nf">value</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="nf">negative?</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="p">.</span><span class="nf">negative?</span> <span class="o">==</span> <span class="n">b</span><span class="p">.</span><span class="nf">negative?</span>
+
+      <span class="k">if</span> <span class="n">a</span><span class="p">.</span><span class="nf">negative?</span>
+        <span class="k">if</span> <span class="n">a</span><span class="p">.</span><span class="nf">value</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="nf">value</span>
+          <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="nf">value</span> <span class="o">-</span> <span class="n">b</span><span class="p">.</span><span class="nf">value</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+        <span class="k">else</span>
+          <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="nf">value</span> <span class="o">-</span> <span class="n">a</span><span class="p">.</span><span class="nf">value</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">else</span>
+        <span class="k">if</span> <span class="n">a</span><span class="p">.</span><span class="nf">value</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="nf">value</span>
+          <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="nf">value</span> <span class="o">-</span> <span class="n">b</span><span class="p">.</span><span class="nf">value</span><span class="p">)</span>
+        <span class="k">else</span>
+          <span class="no">IntegerNumber</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="nf">value</span> <span class="o">-</span> <span class="n">a</span><span class="p">.</span><span class="nf">value</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The problem here is that we actually have to make <code class="highlighter-rouge">#value</code> public. It’s
+interesting because, on the one hand, we want to make <code class="highlighter-rouge">IntegerNumber</code> just a
+data class, but, on the other hand, we don’t really want to expose its inner
+state since it’s so low-level. I guess we just have to make sacrifices or allow
+usage of send in Add and all similar classes.</p>
+
+<p>I guess that’s one of the main differences between OOP and FP - OOP hides data.</p>
+
+<p>On the bright side, we can introduce some functional programming features to
+this design. For example, currying:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">IntegerNumber</span>
+  <span class="k">class</span> <span class="nc">Add</span>
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+      <span class="n">new</span><span class="p">(</span><span class="n">a</span><span class="p">).</span><span class="nf">call</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+      <span class="vi">@a</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+      <span class="o">...</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">curry</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+      <span class="n">new</span><span class="p">(</span><span class="n">call</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">add_five</span> <span class="o">=</span> <span class="no">IntegerNumber</span><span class="o">::</span><span class="no">Add</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">five</span><span class="p">)</span>
+<span class="n">add_seven</span> <span class="o">=</span> <span class="n">add_five</span><span class="p">.</span><span class="nf">curry</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+<span class="n">seven</span> <span class="o">=</span> <span class="n">add_five</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+<span class="n">nine</span> <span class="o">=</span> <span class="n">add_seven</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Without our “ground rules” it would look even better.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>It was an interesting experience because I had some thoughts about software
+design in the process. I didn’t prove anything by this nor discovered anything
+new. But I had some fun.</p>
+
+<p>You can find the code <a href="https://github.com/Nondv/experiments/tree/master/oop_numbers">here</a>.</p>
+
+</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fimplementing-numbers-in-pure-ruby.html&text=Implementing+numbers+in+%22pure%22+Ruby&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fimplementing-numbers-in-pure-ruby.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Foop%2Fimplementing-numbers-in-pure-ruby.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+    </div>
+
+    <div id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a href="https://nondv.wtf" target="_blank">Dmitry Non</a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank"><img src="/img/made-with-bulma.png" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank"><img src="/img/jekyll-logo.png" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank"><img id="footer-github-logo" src="/img/github-logo.png" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>
