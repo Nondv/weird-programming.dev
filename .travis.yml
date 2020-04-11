@@ -6,7 +6,6 @@ cache: bundler
 script:
   - bundle
   - JEKYLL_ENV=production bundle exec jekyll build
-  - echo weird-programming.dev > _site/CNAME
 
 deploy:
   provider: pages
