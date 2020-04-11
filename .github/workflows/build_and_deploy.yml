@@ -19,12 +19,12 @@ jobs:
         -v ${{ github.workspace }}:/srv/jekyll \
         -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
         -e JEKYLL_ENV=production \
-        jekyll/builder:4.0 \
+        jekyll/minimal:4.0 \
         /bin/bash -c "chmod 777 /srv/jekyll && jekyll build"
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.4.7
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: gh-actions-test
-        FOLDER: /srv/jekyll/_site # The folder the action should deploy.
+        FOLDER: ${{ github.workspace }}/_site # The folder the action should deploy.
 
