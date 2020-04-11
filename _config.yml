@@ -20,7 +20,7 @@
 
 title: Weird programming blog
 description: >- # this means to ignore newlines until "baseurl:"
-  Programming blog with some weirdness to it.
+  Programming blog exploring some weird and crazy ideas.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://weird-programming.dev" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: Nondv
