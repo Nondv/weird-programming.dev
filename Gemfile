@@ -10,7 +10,7 @@ source "https://rubygems.org"
 # Happy Jekylling!
 gem "jekyll", "~> 4.0.0"
 
-gem "sassc", '2.1.0'
+gem "sassc", '2.1.0' # 2.2 was causing problems with caching on github actions
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
 # and associated library.
