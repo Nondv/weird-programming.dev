@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta itemprop="description" name="description" content="Let's write a Ruby web service using pure lambdas and Rack" />
+
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/syntax-highlight.css">
+    <link rel="stylesheet" href="/css/other.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Writing a small web service with Ruby, Rack, and functional programming</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-margin-left-5" href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Writing a small web service with Ruby, Rack, and functional programming</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fwriting-a-small-web-service-with-ruby-rack-and-fp.html&text=Writing+a+small+web+service+with+Ruby%2C+Rack%2C+and+functional+programming&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fwriting-a-small-web-service-with-ruby-rack-and-fp.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fwriting-a-small-web-service-with-ruby-rack-and-fp.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+<div class="content">
+  <p><em>Originally posted on <a href="https://levelup.gitconnected.com/writing-a-small-web-service-with-ruby-rack-and-functional-programming-a16f802a19c0">medium.com</a></em></p>
+
+<p>I love Ruby. I also love object-oriented programming. However, nowadays
+functional programming is getting more and more attention. And that’s not
+surprising because the functional paradigm has a lot of advantages.</p>
+
+<p>Ruby, being a multi-paradigm language, allows us to write programs in a
+functional style. Let’s see if we can write a web application this way. Maybe we
+even end up inventing a web framework ;)</p>
+
+<!--more-->
+
+<h1 id="ground-rules">Ground rules</h1>
+
+<p>Let’s establish some ground rules.</p>
+
+<ol>
+  <li>Lambdas. Lambdas everywhere</li>
+  <li>Arrays. We can use arrays and some methods from <code class="highlighter-rouge">Enumerable</code> like <code class="highlighter-rouge">#map</code>,
+<code class="highlighter-rouge">#reduce</code>, <code class="highlighter-rouge">#find</code>, <code class="highlighter-rouge">#select</code>, <code class="highlighter-rouge">#reject</code></li>
+  <li>Hashes. We can access values via [key] and use merge for modifying them
+(no mutations!)</li>
+  <li>Keeping external dependencies (like rack utility functions) to a minimum.</li>
+</ol>
+
+<h1 id="rack">Rack</h1>
+
+<blockquote>
+  <p>Rack provides a minimal, modular, and adaptable interface for developing web
+applications in Ruby.</p>
+</blockquote>
+
+<p>Rack is used by Rails and Sinatra. You can learn more about it here:
+https://github.com/rack/rack</p>
+
+<p>Rack expects an application to be an object with a <code class="highlighter-rouge">#call</code> method accepting <code class="highlighter-rouge">env</code>
+(hash containing all the information about a request) and returning a 3-element
+tuple:</p>
+
+<p><code class="highlighter-rouge">[status_code, headers_hash, body_array]</code></p>
+
+<p>(body array is usually a list of strings)</p>
+
+<p>This is great because it uses basic data structures and the <code class="highlighter-rouge">#call</code> method
+indicates that we can use a lambda/proc as an application.</p>
+
+<h1 id="setup">Setup</h1>
+
+<p>Let’s set up an app first.</p>
+
+<h2 id="gemfile">Gemfile</h2>
+
+<p>Generate a Gemfile with <code class="highlighter-rouge">bundle init</code> and add Rack to it.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span> <span class="s2">"https://rubygems.org"</span>
+<span class="n">git_source</span><span class="p">(</span><span class="ss">:github</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">repo_name</span><span class="o">|</span> <span class="s2">"https://github.com/</span><span class="si">#{</span><span class="n">repo_name</span><span class="si">}</span><span class="s2">"</span> <span class="p">}</span>
+
+<span class="n">gem</span> <span class="s2">"rack"</span>
+</code></pre></div></div>
+
+<h2 id="configru">config.ru</h2>
+
+<p><code class="highlighter-rouge">config.ru</code> is a script being run by <code class="highlighter-rouge">rackup</code> program shipping with Rack and
+starting a webserver.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'rack/reloader'</span>
+<span class="nb">require_relative</span> <span class="s1">'app'</span>
+
+<span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Reloader</span>
+<span class="n">run</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="no">APP</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Rack reloader will reload our application without restarting the server.</p>
+
+<p>We will also assume that our app source code will define the <code class="highlighter-rouge">APP</code> constant with
+our app lambda. We also need to wrap it into another lambda or Rack won’t pick
+up changes to the constant.</p>
+
+<h2 id="apprb">app.rb</h2>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># frozen_string_literal: true</span>
+
+<span class="no">APP</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{},</span> <span class="p">[</span><span class="n">env</span><span class="p">.</span><span class="nf">inspect</span><span class="p">]]</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now we can start the webserver with <code class="highlighter-rouge">bundle exec rackup</code>.
+It should be available on http://localhost:9292</p>
+
+<h1 id="routing">Routing</h1>
+
+<p>Let’s add a route for <code class="highlighter-rouge">/hello</code> showing “Hello world” message. Also, a 404 page.</p>
+
+<h2 id="handlers">Handlers</h2>
+
+<p>Let’s move our previous lambda from APP to a handler variable.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">hello_handler</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{},</span> <span class="p">[</span><span class="s2">"Hello world"</span><span class="p">]]</span> <span class="p">}</span>
+<span class="n">env_inspect_handler</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{},</span> <span class="p">[</span><span class="n">env</span><span class="p">.</span><span class="nf">inspect</span><span class="p">]]</span> <span class="p">}</span>
+<span class="n">not_found_handler</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="p">[</span><span class="mi">404</span><span class="p">,</span> <span class="p">{},</span> <span class="p">[</span><span class="s2">"404 Not found"</span><span class="p">]]</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="routes">Routes</h2>
+
+<p>Let’s define routes as a list of pairs condition + handler:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Utility constant function</span>
+<span class="n">constant</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="p">{</span> <span class="n">x</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="n">exact_path_matcher</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">env</span><span class="p">[</span><span class="s1">'PATH_INFO'</span><span class="p">]</span> <span class="o">==</span> <span class="n">path</span> <span class="p">}</span> <span class="p">}</span>
+<span class="n">routes</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">[</span><span class="n">exact_path_matcher</span><span class="p">[</span><span class="s1">'/'</span><span class="p">],</span> <span class="n">env_inspect_handler</span><span class="p">],</span>
+  <span class="p">[</span><span class="n">exact_path_matcher</span><span class="p">[</span><span class="s1">'/hello'</span><span class="p">],</span> <span class="n">hello_handler</span><span class="p">],</span>
+  <span class="c1"># else</span>
+  <span class="p">[</span><span class="n">constant</span><span class="p">[</span><span class="kp">true</span><span class="p">],</span> <span class="n">not_found_handler</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>We could also make a data type out of routes. For that, instead of explicitly
+writing them as pairs we should create a function <code class="highlighter-rouge">route(matcher, handler)</code> and
+getter functions <code class="highlighter-rouge">route_matcher(route)</code> and <code class="highlighter-rouge">route_handler(route)</code> . This way
+the code becomes more flexible since it won’t know a lot about the data
+structure implementation. However, let’s keep it simple.</p>
+
+<h2 id="router">Router</h2>
+
+<p>A router is a dispatch function that decides which handler to use for a request.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">comp</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span> <span class="p">{</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="n">f1</span><span class="p">[</span><span class="n">f2</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span> <span class="p">}</span> <span class="p">}</span>
+<span class="c1"># Utility function to get the handler out of a route</span>
+<span class="n">second</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">((</span><span class="n">_a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span> <span class="p">{</span> <span class="n">b</span> <span class="p">}</span>
+
+<span class="n">route_matcher</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="o">-&gt;</span><span class="p">((</span><span class="n">cond</span><span class="p">,</span> <span class="n">_handler</span><span class="p">))</span> <span class="p">{</span> <span class="n">cond</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span>
+<span class="n">find_route</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">routes</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">route_matcher</span><span class="p">[</span><span class="n">env</span><span class="p">])</span> <span class="p">}</span>
+<span class="n">find_handler</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="n">second</span><span class="p">,</span> <span class="n">find_route</span><span class="p">]</span>
+<span class="n">router</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">find_handler</span><span class="p">[</span><span class="n">env</span><span class="p">][</span><span class="n">env</span><span class="p">]</span> <span class="p">}</span>
+
+<span class="no">APP</span> <span class="o">=</span> <span class="n">router</span>
+</code></pre></div></div>
+
+<h1 id="middleware">Middleware</h1>
+
+<p>Let’s make users provide their name to greet them properly.</p>
+
+<p>For that, we need a <code class="highlighter-rouge">params</code> hash.</p>
+
+<h2 id="params-middleware">Params middleware</h2>
+
+<p>A middleware is just a wrapper over a handler that modifies the <code class="highlighter-rouge">env</code> or the
+result returned from it.</p>
+
+<p>Let’s create a middleware that adds <code class="highlighter-rouge">params</code> hash to <code class="highlighter-rouge">env</code> before handing it over to
+a handler.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">query_to_params</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="p">{</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Utils</span><span class="p">.</span><span class="nf">parse_nested_query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">query_from_env</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">env</span><span class="p">[</span><span class="s1">'QUERY_STRING'</span><span class="p">]</span> <span class="p">}</span>
+<span class="n">env_to_params</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="n">query_to_params</span><span class="p">,</span> <span class="n">query_from_env</span><span class="p">]</span>
+<span class="n">env_with_params</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">env</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span><span class="ss">params: </span><span class="n">env_to_params</span><span class="p">[</span><span class="n">env</span><span class="p">])</span> <span class="p">}</span>
+<span class="n">params_middleware</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="p">{</span> <span class="n">comp</span><span class="p">[</span><span class="n">handler</span><span class="p">,</span> <span class="n">env_with_params</span><span class="p">]</span> <span class="p">}</span>
+
+<span class="no">APP</span> <span class="o">=</span> <span class="n">params_middleware</span><span class="p">[</span><span class="n">router</span><span class="p">]</span>
+</code></pre></div></div>
+
+<h2 id="the-handler">The handler</h2>
+
+<p>Let’s use the new parameter in a handler.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">hello_handler</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{},</span> <span class="p">[</span><span class="s2">"Hello </span><span class="si">#{</span><span class="n">env</span><span class="p">[</span><span class="ss">:params</span><span class="p">][</span><span class="s1">'name'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">]]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now we should be able to see a greeting here:
+http://localhost:9292/hello?name=John+Doe</p>
+
+<h2 id="content-type-header">Content-Type header</h2>
+
+<p>Let’s also add text/html content-type header while we are at it.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">content_type_middleware</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+  <span class="o">-&gt;</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="n">handler</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+      <span class="p">[</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span><span class="s1">'Content-Type'</span> <span class="o">=&gt;</span> <span class="n">type</span><span class="p">),</span> <span class="n">body</span><span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">html_content_type_middleware</span> <span class="o">=</span> <span class="n">content_type_middleware</span><span class="p">[</span><span class="s1">'text/html'</span><span class="p">]</span>
+<span class="no">APP</span> <span class="o">=</span> <span class="n">html_content_type_middleware</span><span class="p">[</span><span class="n">params_middleware</span><span class="p">[</span><span class="n">router</span><span class="p">]]</span>
+</code></pre></div></div>
+
+<h2 id="listing-middleware">Listing middleware</h2>
+
+<p>Right now we are adding a middleware by directly calling it on a handler.
+It would look nicer if we could just list them and apply later.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">identity</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="n">x</span> <span class="p">}</span>
+
+<span class="n">middleware_list</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="n">params_middleware</span><span class="p">,</span>
+  <span class="n">html_content_type_middleware</span>
+<span class="p">]</span>
+<span class="n">app_middleware</span> <span class="o">=</span> <span class="n">middleware_list</span><span class="p">.</span><span class="nf">reduce</span><span class="p">(</span><span class="n">identity</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">comp</span><span class="p">)</span>
+
+<span class="no">APP</span> <span class="o">=</span> <span class="n">app_middleware</span><span class="p">[</span><span class="n">router</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>The identity function is great. Composing it with another function has zero
+effect so it’s great as an init value for reducing.</p>
+
+<h1 id="conclusion">Conclusion?</h1>
+
+<p>We have implemented a small web application. It doesn’t do much though. However,
+it’s interesting how far we could go by just using lambdas, arrays, and hashes.</p>
+
+<p>Database interactions would introduce side-effects to our code. As an idea, they
+could be put into methods so it’s easier to distinguish them from pure lambdas.</p>
+
+<p>We could also make a framework from it by moving the essential stuff to hashes
+and assigning them to constants. For example,</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">routes_to_router</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">routes</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">route_matcher</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="o">-&gt;</span><span class="p">((</span><span class="n">cond</span><span class="p">,</span> <span class="n">_handler</span><span class="p">))</span> <span class="p">{</span> <span class="n">cond</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span>
+  <span class="n">find_route</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">routes</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">route_matcher</span><span class="p">[</span><span class="n">env</span><span class="p">])</span> <span class="p">}</span>
+  <span class="n">find_handler</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="n">second</span><span class="p">,</span> <span class="n">find_route</span><span class="p">]</span>
+  <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="n">find_handler</span><span class="p">[</span><span class="n">env</span><span class="p">][</span><span class="n">env</span><span class="p">]</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="no">ROUTING</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">routes_to_router: </span><span class="n">routes_to_router</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You can find the complete source code
+<a href="https://github.com/Nondv/ruby-experiments/tree/master/functional_rack">here</a>.</p>
+
+</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fwriting-a-small-web-service-with-ruby-rack-and-fp.html&text=Writing+a+small+web+service+with+Ruby%2C+Rack%2C+and+functional+programming&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fwriting-a-small-web-service-with-ruby-rack-and-fp.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fwriting-a-small-web-service-with-ruby-rack-and-fp.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+    </div>
+
+    <div id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a href="https://nondv.wtf" target="_blank">Dmitry Non</a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank"><img src="/img/made-with-bulma.png" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank"><img src="/img/jekyll-logo.png" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank"><img id="footer-github-logo" src="/img/github-logo.png" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>

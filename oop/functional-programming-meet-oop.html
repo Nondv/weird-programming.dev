@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta itemprop="description" name="description" content="Implementing OOP in a functional programming language" />
+
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/syntax-highlight.css">
+    <link rel="stylesheet" href="/css/other.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Functional programming, meet OOP</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-margin-left-5" href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Functional programming, meet OOP</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Ffunctional-programming-meet-oop.html&text=Functional+programming%2C+meet+OOP&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Ffunctional-programming-meet-oop.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Foop%2Ffunctional-programming-meet-oop.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+<div class="content">
+  <p><em>Originally posted on <a href="https://medium.com/swlh/functional-programming-meet-oop-3dc12a14e38e">medium.com</a></em></p>
+
+<p>I enjoy experimenting with programming paradigms and trying out some interesting
+(to me) ideas (some things become posts, like this and that). Recently I decided
+to see if I can write object-oriented code in a functional language.</p>
+
+<!--more-->
+
+<h1 id="idea">Idea</h1>
+
+<p>I was trying to get some inspiration from <a href="http://www.purl.org/stefan_ram/pub/doc_kay_oop_en">Alan Kay</a>,
+the creator of object-oriented programming.</p>
+
+<blockquote>
+  <p>OOP to me means only messaging, local retention and protection and hiding of
+state-process, and extreme late-binding of all things.</p>
+</blockquote>
+
+<p>I decided that I will be happy if I can implement message sending and inner
+state.</p>
+
+<p>So here comes the main problem of the whole concept — the state.</p>
+
+<h2 id="state">State</h2>
+
+<p>You are not supposed to have a state in functional programming. So how do you
+change values in functional programming? Usually, by using recursion
+(pseudocode):</p>
+
+<div class="language-pascal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="n">list_sum</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">empty</span><span class="p">?</span>
+    <span class="n">result</span>
+  <span class="k">else</span>
+    <span class="n">list_sum</span><span class="p">(</span><span class="n">tail</span><span class="p">(</span><span class="n">list</span><span class="p">),</span> <span class="n">result</span> <span class="p">+</span> <span class="n">first</span><span class="p">(</span><span class="n">list</span><span class="p">))</span>
+<span class="n">list_sum</span><span class="p">([</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">],</span> <span class="m">0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>In imperative programming, we usually create a variable and change its value all
+the time. Here we, essentially, are doing the same by calling a function again
+with different parameters.</p>
+
+<p>But an object should have a state and receive messages. Let’s try this:</p>
+
+<div class="language-pascal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="n">some_object</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+  <span class="n">msg</span> <span class="p">=</span> <span class="n">receive_message</span><span class="p">()</span>
+  <span class="n">next_state</span> <span class="p">=</span> <span class="n">process_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+  <span class="n">some_object</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Seems reasonable to me. But this is blocking everything, how do I create other
+objects? How do I send messages between them? Well, let me quote Alan Kay again:</p>
+
+<blockquote>
+  <p>I thought of objects being like biological cells and/or individual computers
+on a network, only able to communicate with messages</p>
+</blockquote>
+
+<p>This gave me an idea of using parallelism. I called <code class="highlighter-rouge">some_object(state)</code> function
+“object loop” and decided to run it in a separate thread. The only mystery left
+so far is messaging.</p>
+
+<h2 id="messaging">Messaging</h2>
+
+<p>In terms of messaging, I decided that we can just use
+<a href="https://en.wikipedia.org/wiki/Channel_(programming)">channels</a>
+(they seem to be incredibly popular in Go programming language). Then
+<code class="highlighter-rouge">receive_message()</code> would be just waiting for a message appearing in a channel
+(message queue). Sounds easy enough.</p>
+
+<h1 id="language">Language</h1>
+
+<p>Initially, I wanted to use Haskell but I don’t know the language so I’d have a
+really hard time dealing with laziness, static typing and tons of googling when
+all I wanted really was just to make a prototype of my idea. So I decided to use
+Clojure since it’s dynamic and is great for interactive programming (which makes
+life a lot easier for prototyping and experimenting).</p>
+
+<p>Now, being mixed-paradigm language, it’s possible to have an actual state in
+Clojure:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="p">{</span><span class="no">:id</span><span class="w"> </span><span class="mi">1</span><span class="n">,</span><span class="w"> </span><span class="no">:name</span><span class="w"> </span><span class="s">"John"</span><span class="p">}))</span><span class="w">
+</span><span class="o">@</span><span class="n">user</span><span class="w"> </span><span class="c1">; ==&gt; {:id 1, :name "John" }</span><span class="w">
+</span><span class="p">(</span><span class="nf">reset!</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="p">{</span><span class="no">:id</span><span class="w"> </span><span class="mi">1</span><span class="n">,</span><span class="w"> </span><span class="no">:name</span><span class="w"> </span><span class="s">"John Doe"</span><span class="p">})</span><span class="w">
+</span><span class="o">@</span><span class="n">user</span><span class="w"> </span><span class="c1">; ==&gt; {:id 1, :name "John Doe"}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We will be avoiding using stuff like this, of course.</p>
+
+<h1 id="object">Object</h1>
+
+<p>So, the core concept of object-oriented programming is an object. Things like
+classes are not required (for example, JavaScript, being OOP language, doesn’t
+have classes; It emulates them, being prototype-oriented). Let’s start by
+implementing objects.</p>
+
+<p>So, what do we need for our object? So far I’ve mentioned “object loop” and
+channels. Also, we need <code class="highlighter-rouge">process_message(message)</code> function.</p>
+
+<p>Clojure has its own implementation of channels in <code class="highlighter-rouge">clojure.core.async</code> library
+so we will be using it. But first, we need to think of data-structure for
+representing our object. It’s simple, really:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="n">functional-oop.object</span><span class="w">
+  </span><span class="p">(</span><span class="no">:require</span><span class="w"> </span><span class="p">[</span><span class="n">clojure.core.async</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="n">async</span><span class="p">]))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">datastructure</span><span class="w"> </span><span class="p">[</span><span class="n">message-handler</span><span class="w"> </span><span class="n">channel</span><span class="p">]</span><span class="w">
+  </span><span class="p">{</span><span class="no">:message-handler</span><span class="w"> </span><span class="n">message-handler</span><span class="w">
+   </span><span class="no">:channel</span><span class="w"> </span><span class="n">channel</span><span class="p">})</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now we just need to add an object loop:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">object-loop</span><span class="w"> </span><span class="p">[</span><span class="n">obj</span><span class="w"> </span><span class="n">state</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">message</span><span class="w"> </span><span class="p">(</span><span class="nf">async/&lt;!!</span><span class="w"> </span><span class="p">(</span><span class="no">:channel</span><span class="w"> </span><span class="n">obj</span><span class="p">))</span><span class="w">
+        </span><span class="n">next-state</span><span class="w"> </span><span class="p">((</span><span class="no">:message-handler</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">message</span><span class="p">)]</span><span class="w">
+    </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">nil?</span><span class="w"> </span><span class="n">next-state</span><span class="p">)</span><span class="w">
+      </span><span class="n">nil</span><span class="w">
+      </span><span class="p">(</span><span class="nf">recur</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="n">next-state</span><span class="p">))))</span><span class="w">
+</span></code></pre></div></div>
+
+<p><code class="highlighter-rouge">async/&lt;!!</code> is just a function that waits for the message in a channel. A
+message handler is supposed to return next state or nil to stop the loop. Also,
+the message handler is supposed to accept the object itself (self), state and,
+of course, the message as arguments.</p>
+
+<p>Okay, everything is ready, all we need is to glue it together — initialise an
+object:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">init</span><span class="w"> </span><span class="p">[</span><span class="n">state</span><span class="w"> </span><span class="n">message-handler</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">channel</span><span class="w"> </span><span class="p">(</span><span class="nf">async/chan</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w">
+        </span><span class="n">obj</span><span class="w"> </span><span class="p">(</span><span class="nf">datastructure</span><span class="w"> </span><span class="n">message-handler</span><span class="w"> </span><span class="n">channel</span><span class="p">)]</span><span class="w">
+    </span><span class="p">(</span><span class="nf">async/thread</span><span class="w"> </span><span class="p">(</span><span class="nf">object-loop</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="n">state</span><span class="p">))</span><span class="w">
+    </span><span class="n">obj</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">send-msg</span><span class="w"> </span><span class="p">[</span><span class="n">obj</span><span class="w"> </span><span class="n">msg</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">async/&gt;!!</span><span class="w"> </span><span class="p">(</span><span class="no">:channel</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="n">msg</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Here we literally just start the loop and return a data structure for other code
+to communicate with that. And other code can communicate with the object by
+sending it a message via <code class="highlighter-rouge">send-msg</code>. <code class="highlighter-rouge">async/&gt;!!</code>, as you might guess, writes
+something to a channel.</p>
+
+<h2 id="using-objects">Using objects</h2>
+
+<p>Okay, but does it work? Let’s try it out. I decided to test it on string
+builder.</p>
+
+<p>String builder is just an object that combines a bunch of strings together:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>builder = new StringBuilder
+builder.add "Hello"
+builder.add " world"
+builder.build # ===&gt; "Hello world"
+</code></pre></div></div>
+
+<p>So let’s try it implementing it:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">message-handler</span><span class="w"> </span><span class="p">[</span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">msg</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">case</span><span class="w"> </span><span class="p">(</span><span class="no">:method</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w">
+    </span><span class="no">:add</span><span class="w"> </span><span class="p">(</span><span class="nf">update</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="no">:strings</span><span class="w"> </span><span class="nb">conj</span><span class="w"> </span><span class="p">(</span><span class="no">:str</span><span class="w"> </span><span class="n">msg</span><span class="p">))</span><span class="w">
+    </span><span class="no">:add-twice</span><span class="w"> </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">add-msg</span><span class="w"> </span><span class="p">{</span><span class="no">:method</span><span class="w"> </span><span class="no">:add,</span><span class="w"> </span><span class="no">:str</span><span class="w"> </span><span class="p">(</span><span class="no">:str</span><span class="w"> </span><span class="n">msg</span><span class="p">)}]</span><span class="w">
+                 </span><span class="p">(</span><span class="nf">object/send-msg</span><span class="w"> </span><span class="n">self</span><span class="w"> </span><span class="n">add-msg</span><span class="p">)</span><span class="w">
+                 </span><span class="p">(</span><span class="nf">object/send-msg</span><span class="w"> </span><span class="n">self</span><span class="w"> </span><span class="n">add-msg</span><span class="p">)</span><span class="w">
+                 </span><span class="n">state</span><span class="p">)</span><span class="w">
+    </span><span class="no">:reset</span><span class="w"> </span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="no">:strings</span><span class="w"> </span><span class="p">[])</span><span class="w">
+    </span><span class="no">:build</span><span class="w"> </span><span class="p">(</span><span class="nf">do</span><span class="w">
+             </span><span class="p">((</span><span class="no">:callback</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">apply</span><span class="w"> </span><span class="nb">str</span><span class="w"> </span><span class="p">(</span><span class="no">:strings</span><span class="w"> </span><span class="n">state</span><span class="p">)))</span><span class="w">
+             </span><span class="n">state</span><span class="p">)</span><span class="w">
+    </span><span class="no">:free</span><span class="w"> </span><span class="n">nil</span><span class="w">
+    </span><span class="c1">;; ignore incorrect messages</span><span class="w">
+    </span><span class="n">state</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">string-builder</span><span class="w">
+  </span><span class="p">(</span><span class="nf">object/init</span><span class="w"> </span><span class="p">{</span><span class="no">:strings</span><span class="w"> </span><span class="p">[]}</span><span class="w"> </span><span class="n">message-handler</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>(this is a bit modified version from the test I wrote)</p>
+
+<p>So, we can think of the message handler as a dispatcher that calls the proper
+method depending on a message received. Here we have 5 methods.</p>
+
+<p>Let’s try our hello world example:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nf">object/send-msg</span><span class="w"> </span><span class="n">string-builder</span><span class="w"> </span><span class="p">{</span><span class="no">:method</span><span class="w"> </span><span class="no">:add,</span><span class="w"> </span><span class="no">:str</span><span class="w"> </span><span class="s">"Hello"</span><span class="p">})</span><span class="w">
+</span><span class="p">(</span><span class="nf">object/send-msg</span><span class="w"> </span><span class="n">string-builder</span><span class="w"> </span><span class="p">{</span><span class="no">:method</span><span class="w"> </span><span class="no">:add,</span><span class="w"> </span><span class="no">:str</span><span class="w"> </span><span class="s">" world"</span><span class="p">})</span><span class="w">
+
+</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">result-promise</span><span class="w"> </span><span class="p">(</span><span class="nf">promise</span><span class="p">)]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">object/send-msg</span><span class="w"> </span><span class="n">string-builder</span><span class="w">
+                   </span><span class="p">{</span><span class="no">:method</span><span class="w"> </span><span class="no">:build</span><span class="w">
+                    </span><span class="no">:callback</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">deliver</span><span class="w"> </span><span class="n">result-promise</span><span class="w"> </span><span class="n">res</span><span class="p">))})</span><span class="w">
+  </span><span class="o">@</span><span class="n">result-promise</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">;; ===&gt; "Hello world"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The first two lines are quite straightforward. But what’s going on after?</p>
+
+<p>Our object lives in a separate thread and it’s supposed to return the object
+state. So how can we get some result from it? By using callbacks and promises.</p>
+
+<p>Here I decided to use a callback and deliver a promise in it. I don’t think it’s
+a good design and I should have used promises right away instead. However, this
+is just for demonstration so sue me :)</p>
+
+<p><code class="highlighter-rouge">@result-promise</code> is fetching the result of a promise and if it’s not ready, it
+waits for it (blocks the current thread).</p>
+
+<p>Now, <code class="highlighter-rouge">add-twice</code> is a bit more interesting, because it sends messages to
+self. One of the problems with this object design is that we can’t really call
+other methods from a method, because the object loop deals with one message at a
+time. So we can only work with other methods asynchronously. It’s just a
+limitation of this architecture and it should be kept in mind or objects can get
+stuck.</p>
+
+<p>When I was testing it, I did something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. call :add-twice with "ha" string
+2. call :build and see if it equals "haha"
+</code></pre></div></div>
+
+<p>and it didn’t work. This is because <code class="highlighter-rouge">:build</code> message was sent <strong>before</strong>
+<code class="highlighter-rouge">:add-twice</code> sent <code class="highlighter-rouge">:add</code> messages (it’s a queue, remember?).</p>
+
+<p>I spent quite a bit of time trying to understand what was wrong. That happened
+because I am not used to parallel programming and it is a very common
+issue. This is one of the reasons why functional programming is getting popular
+nowadays — pure functions make it much harder to make a mistake like that. My
+state just had a race condition. States are evil ;)</p>
+
+<p>So, that was our foundation of an object system. We can build a lot of things on
+top of this. Let’s do classes, shall we?</p>
+
+<h1 id="classes">Classes</h1>
+
+<p>For me, a class is just a template of an object, containing its behaviour
+(methods). And, to be honest, classes can be objects themselves (as they are in
+Ruby, for example). So let’s introduce some classes.</p>
+
+<p>First, we need to “standardise” how methods are called and executed. I’m getting
+lazy so I will just dump the whole namespace here (apologies):</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="n">functional-oop.klass.method</span><span class="w">
+  </span><span class="p">(</span><span class="no">:require</span><span class="w"> </span><span class="p">[</span><span class="n">functional-oop.object</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="n">object</span><span class="p">]))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">call-message</span><span class="w"> </span><span class="p">[</span><span class="n">method-name</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w">
+  </span><span class="p">{</span><span class="no">:method</span><span class="w"> </span><span class="n">method-name</span><span class="w"> </span><span class="no">:args</span><span class="w"> </span><span class="n">args</span><span class="p">})</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">call-on-object</span><span class="w"> </span><span class="p">[</span><span class="n">obj</span><span class="w"> </span><span class="n">method-name</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">object/send-msg</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="p">(</span><span class="nf">call-message</span><span class="w"> </span><span class="n">method-name</span><span class="w"> </span><span class="n">args</span><span class="p">)))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">for-message</span><span class="w"> </span><span class="p">[</span><span class="n">method-map</span><span class="w"> </span><span class="n">msg</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">method-map</span><span class="w"> </span><span class="p">(</span><span class="no">:method</span><span class="w"> </span><span class="n">msg</span><span class="p">)))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">execute</span><span class="w"> </span><span class="p">[</span><span class="n">method</span><span class="w"> </span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">msg</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nb">apply</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="p">(</span><span class="no">:args</span><span class="w"> </span><span class="n">msg</span><span class="p">)))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>So, a message to call a method is just a hashmap containing two things: method
+name and the arguments it should be called with.</p>
+
+<p>Also, take a look at <code class="highlighter-rouge">for-message</code> function. I am getting a bit ahead of myself
+but we will supply classes with hashmaps <code class="highlighter-rouge">name =&gt; method</code> containing
+methods. The function <code class="highlighter-rouge">execute</code> defines the way methods are executed — instead
+of accepting message it accepts arguments so we don’t have to think about
+messages in our methods.</p>
+
+<p>Handling messages is now quite straightforward:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">
+</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="n">functional-oop.klass</span><span class="w">
+  </span><span class="p">(</span><span class="no">:require</span><span class="w"> </span><span class="p">[</span><span class="n">functional-oop.object</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="n">object</span><span class="p">]</span><span class="w">
+            </span><span class="p">[</span><span class="n">functional-oop.klass.method</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="n">method</span><span class="p">]))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">message-handler</span><span class="w"> </span><span class="p">[</span><span class="n">method-map</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">msg</span><span class="p">]</span><span class="w">
+    </span><span class="c1">;; Ignore invalid messages (at least for now)</span><span class="w">
+    </span><span class="p">(</span><span class="nb">when-let</span><span class="w"> </span><span class="p">[</span><span class="n">method</span><span class="w"> </span><span class="p">(</span><span class="nf">method/for-message</span><span class="w"> </span><span class="n">method-map</span><span class="w"> </span><span class="n">msg</span><span class="p">)]</span><span class="w">
+      </span><span class="p">(</span><span class="nf">method/execute</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">msg</span><span class="p">))))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now, let’s take a look at what classes look like:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">new-klass</span><span class="w"> </span><span class="p">[</span><span class="n">constructor</span><span class="w"> </span><span class="n">method-map</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">object/init</span><span class="w"> </span><span class="p">{</span><span class="no">:method-map</span><span class="w"> </span><span class="n">method-map</span><span class="w">
+                </span><span class="no">:constructor</span><span class="w"> </span><span class="n">constructor</span><span class="w">
+                </span><span class="no">:instances</span><span class="w"> </span><span class="p">[]}</span><span class="w">
+               </span><span class="p">(</span><span class="nf">message-handler</span><span class="w"> </span><span class="p">{</span><span class="no">:new</span><span class="w"> </span><span class="n">instantiate</span><span class="p">})))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>As you can see, I decided to create classes as objects. I didn’t have to,
+classes could be more abstract concept but I thought it’s just funnier this
+way. We could go even further and make <code class="highlighter-rouge">new-klass</code> function private and create
+an object <code class="highlighter-rouge">klass</code> instead that could create other classes via the method
+<code class="highlighter-rouge">:new</code>. It’s quite simple, actually, but I decided not to push it that far.</p>
+
+<p>Anyway, our klasses are just objects with a state containing methods,
+constructor (for initialising new instances) and a vector with instances. We
+don’t actually need the vector, but why not.</p>
+
+<p>Now, what is <code class="highlighter-rouge">instantiate</code> function serving as the method <code class="highlighter-rouge">:new</code>? Here it is:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">instantiate</span><span class="w"> </span><span class="p">[</span><span class="n">klass</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">promise-obj</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[{</span><span class="no">:keys</span><span class="w"> </span><span class="p">[</span><span class="n">constructor</span><span class="w"> </span><span class="n">method-map</span><span class="p">]}</span><span class="w"> </span><span class="n">state</span><span class="w">
+        </span><span class="n">instance</span><span class="w"> </span><span class="p">(</span><span class="nf">object/init</span><span class="w"> </span><span class="p">(</span><span class="nb">apply</span><span class="w"> </span><span class="n">constructor</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w">
+                              </span><span class="p">(</span><span class="nf">message-handler</span><span class="w"> </span><span class="n">method-map</span><span class="p">))]</span><span class="w">
+    </span><span class="p">(</span><span class="nf">update</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="no">:instances</span><span class="w"> </span><span class="nb">conj</span><span class="w"> </span><span class="o">@</span><span class="p">(</span><span class="nf">deliver</span><span class="w"> </span><span class="n">promise-obj</span><span class="w"> </span><span class="n">instance</span><span class="p">))))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>So when we creating a new instance, the constructor is being used for the
+initial state and the instance is added to the vector mentioned earlier. The
+object is being delivered via promise.</p>
+
+<p>Also, I added a helper function for synchronised instantiation:</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">new-instance</span><span class="w">
+  </span><span class="s">"Calls :new method on a klass and blocks until the instance is ready. Returns the instance"</span><span class="w">
+  </span><span class="p">[</span><span class="n">klass</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">constructor-args</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">instance-promise</span><span class="w"> </span><span class="p">(</span><span class="nf">promise</span><span class="p">)]</span><span class="w">
+    </span><span class="p">(</span><span class="nb">apply</span><span class="w"> </span><span class="n">method/call-on-object</span><span class="w"> </span><span class="n">klass</span><span class="w"> </span><span class="no">:new</span><span class="w"> </span><span class="n">instance-promise</span><span class="w"> </span><span class="n">constructor-args</span><span class="p">)</span><span class="w">
+    </span><span class="o">@</span><span class="n">instance-promise</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Okay, let’s try creating a class-oriented string-builder.</p>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">constructor</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="w"> </span><span class="n">strings</span><span class="p">]</span><span class="w">
+  </span><span class="p">{</span><span class="no">:strings</span><span class="w"> </span><span class="p">(</span><span class="nb">into</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="n">strings</span><span class="p">)})</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">string-builder-klass</span><span class="w">
+  </span><span class="p">(</span><span class="nf">klass/new-klass</span><span class="w">
+   </span><span class="n">constructor</span><span class="w">
+   </span><span class="p">{</span><span class="no">:add</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">string</span><span class="p">]</span><span class="w">
+           </span><span class="p">(</span><span class="nf">update</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="no">:strings</span><span class="w"> </span><span class="nb">conj</span><span class="w"> </span><span class="n">string</span><span class="p">))</span><span class="w">
+    </span><span class="no">:build</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">self</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">promise-obj</span><span class="p">]</span><span class="w">
+             </span><span class="p">(</span><span class="nf">deliver</span><span class="w"> </span><span class="n">promise-obj</span><span class="w">
+                      </span><span class="p">(</span><span class="nb">apply</span><span class="w"> </span><span class="nb">str</span><span class="w"> </span><span class="p">(</span><span class="no">:strings</span><span class="w"> </span><span class="n">state</span><span class="p">)))</span><span class="w">
+             </span><span class="n">state</span><span class="p">)</span><span class="w">
+    </span><span class="no">:free</span><span class="w"> </span><span class="p">(</span><span class="nb">constantly</span><span class="w"> </span><span class="n">nil</span><span class="p">)}))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">string-builder-1</span><span class="w"> </span><span class="p">(</span><span class="nf">klass/new-instance</span><span class="w"> </span><span class="n">string-builder-klass</span><span class="p">))</span><span class="w">
+</span><span class="p">(</span><span class="nf">method/call-on-object</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="no">:add</span><span class="w"> </span><span class="s">"abc"</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="nf">method/call-on-object</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="no">:add</span><span class="w"> </span><span class="s">"def"</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">result</span><span class="w"> </span><span class="p">(</span><span class="nf">promise</span><span class="p">)]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">method/call-on-object</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="no">:build</span><span class="w"> </span><span class="n">result</span><span class="p">)</span><span class="w">
+  </span><span class="o">@</span><span class="n">result</span><span class="p">)</span><span class="w">
+</span><span class="c1">;; ==&gt; "abcdef</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">string-builder-2</span><span class="w"> </span><span class="p">(</span><span class="nf">klass/new-instance</span><span class="w"> </span><span class="n">string-builder-klass</span><span class="w"> </span><span class="s">"Hello"</span><span class="w"> </span><span class="s">" world"</span><span class="p">))</span><span class="w">
+</span><span class="p">(</span><span class="nf">method/call-on-object</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="no">:add</span><span class="w"> </span><span class="s">"!"</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">result</span><span class="w"> </span><span class="p">(</span><span class="nf">promise</span><span class="p">)]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">method/call-on-object</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="no">:build</span><span class="w"> </span><span class="n">result</span><span class="p">)</span><span class="w">
+  </span><span class="o">@</span><span class="n">result</span><span class="p">)</span><span class="w">
+</span><span class="c1">;; ==&gt; "Hello world!"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Noice!</p>
+
+<h1 id="more">More?</h1>
+
+<p>This is just a prototype and it has many flaws (no error handling, objects can
+get stuck, memory is leaking). But there are so many things we could
+implement. For example, inheritance. Or we could go into the prototype-oriented
+way. Another thing we could do is to write a nice DSL for that and it can turn
+out to be really nice since we are using Clojure here.</p>
+
+<p>Also, we have mixins available for free already. Mixins are just method maps,
+merged in when instantiating a new class.</p>
+
+<h1 id="can-we-build-something-useful-with-it">Can we build something useful with it?</h1>
+
+<p>I made a simple showcase app — TODO list (classic). It has 3 classes: todo list,
+todo list item and CLI. You can see the code in the repo (the link is below). I
+will just say that it was quite straight-forward. Here’s the console output:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># add
+Title: Buy lots of toilet paper
+
+# add
+Title: Make a TODO list
+
+# list
+TODO list:
+- Buy lots of toilet paper
+- Make a TODO list
+
+# complete
+Index: 1
+
+# list
+TODO list:
+- Buy lots of toilet paper
++ Make a TODO list
+
+# exit
+</code></pre></div></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Well, that was interesting (to me). Along the way, I was trying to understand if
+that prototype can be translated to Haskell. I can’t say for sure but I think
+it’s possible. Haskell has channels, promises and parallelism. Even if it
+didn’t, we could always expand on the idea of an object and instantiate objects
+as separate processes and send messages with something like RabbitMQ.</p>
+
+<p>For me, the most fascinating thing about programming paradigms is that they are
+so different and yet absolutely the same. It’s not about the language; it’s
+about the way a programmer thinks. Languages just allow us to code in a certain
+style much easier and more productive.</p>
+
+<p>I hope my shabby writing wasn’t completely boring and maybe you even learned
+something:)</p>
+
+<p>You can find the repo with the showcase and some tests <a href="https://github.com/Nondv/experiments/tree/master/functional_oop">here</a>.</p>
+
+</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Ffunctional-programming-meet-oop.html&text=Functional+programming%2C+meet+OOP&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Ffunctional-programming-meet-oop.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Foop%2Ffunctional-programming-meet-oop.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+    </div>
+
+    <div id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a href="https://nondv.wtf" target="_blank">Dmitry Non</a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank"><img src="/img/made-with-bulma.png" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank"><img src="/img/jekyll-logo.png" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank"><img id="footer-github-logo" src="/img/github-logo.png" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>

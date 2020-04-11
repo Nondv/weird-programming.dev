@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta itemprop="description" name="description" content="Let's write our own integer expressions language using only data types and pattern matching in haskell" />
+
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/syntax-highlight.css">
+    <link rel="stylesheet" href="/css/other.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Implementing integer expressions with only data types and pattern matching</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-margin-left-5" href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Implementing integer expressions with only data types and pattern matching</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html&text=Implementing+integer+expressions+with+only+data+types+and+pattern+matching&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+<div class="content">
+  <p><em>Inspired by <a href="/oop/implementing-numbers-in-pure-ruby.html">Implementing numbers in “pure” Ruby</a></em></p>
+
+<p>When I started working with <a href="https://elm-lang.org/">Elm programming language</a>
+I was amazed how simple and yet powerful the type system is. It’s just shocking
+how far you can go with with just having some symbols and type constructors.</p>
+
+<!-- Type constructors, in my perception, are merely [injective functions](https://en.wikipedia.org/wiki/Injective_function) -->
+<!-- that evaluate into some abstract data we don't, actually, care about (we care -->
+<!-- only about the function itself and its arguments). I guess, mathematicians would -->
+<!-- disagree with me but that's just how I perceive them to ease the understanding. -->
+
+<p>But how <em>really</em> far can we go? Well, I decided to test it out <em>starting with</em>
+implementing  integers and expressions with them. I decided to use Haskell for
+that. Its laziness may be useful.</p>
+
+<h1 id="ground-rules">Ground rules</h1>
+
+<ol>
+  <li>Nothing from standard library is being used</li>
+  <li>We can create and use data types</li>
+  <li>We can have <strong>only one</strong> function called <code class="highlighter-rouge">eval</code> for evaluating our
+expressions.</li>
+  <li>We can use pattern matching.</li>
+  <li>Ground rules can be broken only for the sake of testing the code. For
+example, printing to the console is fine.</li>
+</ol>
+
+<!--more-->
+
+<h1 id="integer-data-type">Integer data type</h1>
+
+<p>I will use the same ideas I used in my Ruby post. First we implement natural
+numbers and then create integers on top of them.</p>
+
+<h2 id="natural-numbers">Natural numbers</h2>
+
+<!-- We use elm highlight because haskell's sucks -->
+
+<div class="language-elm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span> <span class="kt">NaturalNumber</span> <span class="o">=</span> <span class="kt">Zero</span>
+                   <span class="o">|</span> <span class="kt">Next</span> <span class="kt">NaturalNumber</span>
+                   <span class="n">deriving</span> <span class="kt">Show</span>
+</code></pre></div></div>
+
+<p>Following <a href="https://en.wikipedia.org/wiki/Peano_axioms">Peano axioms</a> we just
+establish a zero and every other number will be <code class="highlighter-rouge">n+1</code>. This is like a list
+without data in it.</p>
+
+<p>Now, <code class="highlighter-rouge">deriving Show</code> just allows REPL to print values of this type. We need it
+only to play around with values in the console. We will be adding it to every
+data type for this sake.</p>
+
+<h2 id="integers">Integers</h2>
+
+<p>Integers are the same as natural numbers but they also have negatives.</p>
+
+<div class="language-elm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span> <span class="kt">Sign</span> <span class="o">=</span> <span class="kt">Plus</span>
+          <span class="o">|</span> <span class="kt">Minus</span>
+          <span class="n">deriving</span> <span class="kt">Show</span>
+
+<span class="n">data</span> <span class="kt">IntNumber</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Sign</span> <span class="kt">NaturalNumber</span> <span class="n">deriving</span> <span class="kt">Show</span>
+</code></pre></div></div>
+
+<p>so, integer is just a pair of a sign and natural number. We could also
+do without <code class="highlighter-rouge">Sign</code> by doing something like</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data IntNumber = Negative NaturalNumber
+               | Positive NaturalNumber
+</code></pre></div></div>
+
+<h1 id="expressions">Expressions</h1>
+
+<p>Now, numbers are good but how do we describe int expressions like <code class="highlighter-rouge">5 - (3 + 7)</code>?</p>
+
+<p>By introducing another data type, of course!</p>
+
+<div class="language-elm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span> <span class="kt">Expression</span> <span class="o">=</span> <span class="kt">Val</span> <span class="kt">IntNumber</span>
+                <span class="o">|</span> <span class="kt">Dec</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Inc</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Neg</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Add</span> <span class="kt">Expression</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Sub</span> <span class="kt">Expression</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">If</span> <span class="kt">Expression</span> <span class="kt">Expression</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Equal</span> <span class="kt">Expression</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">IsNeg</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Greater</span> <span class="kt">Expression</span> <span class="kt">Expression</span>
+                <span class="o">|</span> <span class="kt">Lower</span> <span class="kt">Expression</span> <span class="kt">Expression</span>
+                <span class="n">deriving</span> <span class="kt">Show</span>
+</code></pre></div></div>
+
+<p>Now we can write complex expressions via prefix notation:</p>
+
+<div class="language-elm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">zero</span> <span class="o">=</span> <span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kt">Zero</span><span class="p">)</span>
+<span class="n">one</span> <span class="o">=</span> <span class="kt">Inc</span> <span class="n">zero</span>
+<span class="n">two</span> <span class="o">=</span> <span class="kt">Inc</span> <span class="n">one</span>
+<span class="n">three</span> <span class="o">=</span> <span class="kt">Inc</span> <span class="n">two</span>
+<span class="n">four</span> <span class="o">=</span> <span class="kt">Add</span> <span class="n">two</span> <span class="n">two</span>
+<span class="n">five</span> <span class="o">=</span> <span class="kt">Add</span> <span class="n">two</span> <span class="n">three</span>
+
+<span class="c1">-- or even</span>
+<span class="kt">If</span> <span class="p">(</span><span class="kt">Greater</span> <span class="p">(</span><span class="kt">Sub</span> <span class="n">five</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">three</span> <span class="n">four</span><span class="p">))</span> <span class="n">zero</span><span class="p">)</span>
+ <span class="p">(</span><span class="kt">Add</span> <span class="n">five</span> <span class="n">five</span><span class="p">)</span>
+ <span class="p">(</span><span class="kt">Dec</span> <span class="n">zero</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="evaluation">Evaluation</h1>
+
+<p>If you go to haskell repl:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ghci
+Prelude&gt; :load "code.hs"
+</code></pre></div></div>
+
+<p>and type <code class="highlighter-rouge">two</code> you will see something like:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Inc (Inc (Val (IntNumber Plus Zero)))
+</code></pre></div></div>
+
+<p>True, that equals 2 but how do we get from that to</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IntNumber Plus (Next (Next Zero))
+</code></pre></div></div>
+
+<p>?</p>
+
+<p>Time to implement our function <code class="highlighter-rouge">eval</code> to evaluate expressions</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="o">::</span> <span class="kt">Expression</span> <span class="o">-&gt;</span> <span class="kt">IntNumber</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Val</span> <span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span>
+<span class="c1">-- ...</span>
+</code></pre></div></div>
+
+<p>Now this can unwrap the simplest expression, which is just a number.</p>
+
+<h2 id="helpers">Helpers</h2>
+
+<p>Okay, before we continue, I’d like to introduce some functions that will help us
+playing with expressions:</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">------ repl helpers ------</span>
+<span class="n">to_num</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">to_num</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="n">x</span><span class="p">))</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">to_num</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">x</span><span class="p">))</span>
+<span class="n">to_num</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="p">(</span><span class="kt">Next</span> <span class="n">x</span><span class="p">))</span> <span class="o">=</span> <span class="p">(</span><span class="n">to_num</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">x</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+
+<span class="n">eval_num</span> <span class="o">=</span> <span class="n">to_num</span> <span class="o">.</span> <span class="n">eval</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">to_num</code> will convert our own integers into haskell integers. This way instead
+of long unreadable line</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IntNumber Plus (Next (Next (Next (Next (Next Zero)))))
+</code></pre></div></div>
+
+<p>we will see just <code class="highlighter-rouge">5</code>. <code class="highlighter-rouge">eval_num</code> is just a shortcut for <code class="highlighter-rouge">to_num (eval ...)</code>.</p>
+
+<h2 id="if">If</h2>
+
+<p>Let’s start with <code class="highlighter-rouge">If</code> (no particular reason, I just like it the most):</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">))</span> <span class="kr">_</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="n">expr2</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Val</span> <span class="kr">_</span><span class="p">)</span> <span class="n">expr1</span> <span class="kr">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="n">expr1</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="n">cond</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">cond</span><span class="p">))</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>We don’t have booleans, so we will follow the example of C language and treat
+zero as false and anything else as true (we could do it the other way around,
+that’s not important).</p>
+
+<p>In the first line we match our condition with just a value of zero (the sign
+doesn’t matter so we put wildcard <code class="highlighter-rouge">_</code> on it). If we have zero, we just evaluate
+the second expression (“else” branch).</p>
+
+<p>The second line says “for any other number evaluate the first (‘then’) branch”.</p>
+
+<p>If the condition is not a simple number, we need to evaluate it first so we put
+our expression back with condition evaluated.</p>
+
+<p>Cool? I think so. Let’s do <code class="highlighter-rouge">Neg</code> next. It’s simple.</p>
+
+<h2 id="neg--negative-value">Neg – negative value</h2>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Neg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">n</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">n</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Neg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">n</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">n</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Neg</span> <span class="n">expr</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Neg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">expr</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>Here we just flip around the sign. Nothing fancy.</p>
+
+<p>Note the third expression. We follow the same pattern as we did with <code class="highlighter-rouge">If</code> -
+first we simplify the inner expression and then we follow the logic. This
+pattern will appear a lot so I will not comment on it every time.</p>
+
+<h2 id="inc--increment">Inc – increment</h2>
+
+<p>Alright, now we are getting to actual arithmetics.</p>
+
+<p>As we have seen with natural numbers, we can do a lot with a simple +1
+operation. Let’s implement it:</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="kt">Zero</span><span class="p">)</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">n</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="p">(</span><span class="kt">Next</span> <span class="n">n_minus_one</span><span class="p">))))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">n_minus_one</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="n">expr</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">expr</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>The first line is concerned with zeroes and is similar to the one in <code class="highlighter-rouge">If</code>.</p>
+
+<p>The second line is for the simplest case of positive numbers. We just increment
+the natural number.</p>
+
+<p>The third line is a bit more interesting. It’s concerned with negative
+numbers. What happens to a negative number when we add one to it? Its absolute
+value (natural number) gets decreased by one. We can’t express -1 operation in
+terms of data but pattern matching allows us to destructure the data.
+So <code class="highlighter-rouge">n = (Next n_minus_one) =&gt; (Dec n) = n_minus_one</code>.</p>
+
+<p>So elegant &lt;3.</p>
+
+<h2 id="dec--decrement">Dec – decrement</h2>
+
+<p>The decrement is the opposite of the increment.</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Dec</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="p">(</span><span class="kt">Next</span> <span class="kt">Zero</span><span class="p">)</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Dec</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="n">n_minus_one</span><span class="p">))))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">n_minus_one</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Dec</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">n</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="p">(</span><span class="kt">Next</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Dec</span> <span class="n">expr</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Dec</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">expr</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<h2 id="add--addition">Add – addition</h2>
+
+<p>Now, imagine you have two boxes of apples. How do we add apples from the second
+one to the first? We can just manually move them one by one until the second box
+is empty.</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">expr1</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">)))</span> <span class="o">=</span> <span class="n">eval</span> <span class="n">expr1</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">expr1</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">n</span><span class="p">)))</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="p">(</span><span class="kt">Inc</span> <span class="n">expr1</span><span class="p">)</span> <span class="p">(</span><span class="kt">Dec</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="n">n</span><span class="p">))))</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">expr1</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">n</span><span class="p">)))</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="p">(</span><span class="kt">Dec</span> <span class="n">expr1</span><span class="p">)</span> <span class="p">(</span><span class="kt">Inc</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="n">n</span><span class="p">))))</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">expr1</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">expr2</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>Adding zero changes nothing, so we just proceed with the first “box”
+(argument). Now we have two cases left: when the second number is positive and negative.</p>
+
+<p>For positive numbers we just increment the first expression and decrement the
+second, exactly like with apples. For negative numbers it’s the other way
+around.</p>
+
+<h2 id="sub--substraction">Sub – substraction</h2>
+
+<p>Substraction is just like adding negative second argument to the first:</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Sub</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Add</span> <span class="n">expr1</span> <span class="p">(</span><span class="kt">Neg</span> <span class="n">expr2</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>We defined some operations in terms of already existing ones. Noice!</p>
+
+<h2 id="equal--equality-comparision">Equal – equality comparision</h2>
+
+<p>In our “language” it’s quite easy to define comparison operators, because we
+have numbers instead of booleans.</p>
+
+<p>If we substruct <code class="highlighter-rouge">x</code> from <code class="highlighter-rouge">x</code> the result will be zero. We can use that:</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Equal</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Sub</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span>
+                                 <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kt">Zero</span><span class="p">))</span>
+                                 <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="kt">Zero</span><span class="p">))))</span>
+</code></pre></div></div>
+
+<p>If expression! So beautiful! We could also use <code class="highlighter-rouge">let</code> to name the branches
+<code class="highlighter-rouge">false</code> and <code class="highlighter-rouge">true</code> respectively.</p>
+
+<h2 id="isneg--negativity-check">IsNeg – negativity check</h2>
+
+<p>Before we move on to <code class="highlighter-rouge">&gt;</code> and <code class="highlighter-rouge">&lt;</code> operators I’d like to introduce this predicate.
+It will be helpful to us because other comparison operators will use the same
+substraction idea.</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">IsNeg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kt">Zero</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">IsNeg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kr">_</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kt">Zero</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">IsNeg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Minus</span> <span class="kr">_</span><span class="p">)))</span> <span class="o">=</span> <span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="kt">Zero</span><span class="p">)</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">IsNeg</span> <span class="n">expr</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">IsNeg</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">expr</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>Zero is not negative so we return zero (false). Positive numbers aren’t either,
+hence, zero again. Negative numbers are negative (surprise!) so we return
+anything else (1 in this case).</p>
+
+<h2 id="greater-and-lower-comparison-operators">Greater and Lower comparison operators</h2>
+
+<p>If we substruct <code class="highlighter-rouge">b</code> from <code class="highlighter-rouge">a</code> the sign of the result will tell us how they
+compare to each other. If <code class="highlighter-rouge">a</code> is greater, a positive number will be returned,
+otherwise, negative.</p>
+
+<p>Lower is just a different direction. Tomayto, tomahto.</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Greater</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">IsNeg</span> <span class="p">(</span><span class="kt">Sub</span> <span class="n">expr2</span> <span class="n">expr1</span><span class="p">))</span>
+<span class="n">eval</span> <span class="p">(</span><span class="kt">Lower</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Greater</span> <span class="n">expr2</span> <span class="n">expr1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="more">More?</h2>
+
+<p>We could also implement logical operators <code class="highlighter-rouge">And</code>, <code class="highlighter-rouge">Or</code> and <code class="highlighter-rouge">Xor</code>. But they are
+quite straightforward so I can’t be bothered.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Well, this is only the tip of an iceberg. We implemented integers by using only
+data types and pattern matching.</p>
+
+<p>By the way, have you noticed how similar the code looks to Lisp? The only
+difference is it lacks outer pair of parens.</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">zero</span> <span class="o">=</span> <span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kt">Zero</span><span class="p">)</span>
+<span class="n">one</span> <span class="o">=</span> <span class="kt">Inc</span> <span class="n">zero</span>
+<span class="n">two</span> <span class="o">=</span> <span class="kt">Inc</span> <span class="n">one</span>
+<span class="n">three</span> <span class="o">=</span> <span class="kt">Add</span> <span class="n">one</span> <span class="n">two</span>
+<span class="n">four</span> <span class="o">=</span> <span class="kt">Add</span> <span class="n">two</span> <span class="n">two</span>
+<span class="n">five</span> <span class="o">=</span> <span class="kt">Add</span> <span class="n">two</span> <span class="n">three</span>
+
+<span class="n">eval_num</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Greater</span> <span class="n">one</span> <span class="n">zero</span><span class="p">)</span>
+           <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Lower</span> <span class="p">(</span><span class="kt">Sub</span> <span class="n">five</span> <span class="p">(</span><span class="kt">Neg</span> <span class="n">five</span><span class="p">))</span> <span class="n">zero</span><span class="p">)</span>
+             <span class="n">one</span>
+             <span class="p">(</span><span class="kt">Dec</span> <span class="n">zero</span><span class="p">))</span>
+           <span class="n">zero</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>could be written in Emacs Lisp:</p>
+
+<div class="language-elisp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&gt;</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="p">(</span><span class="nb">-</span> <span class="mi">5</span> <span class="p">(</span><span class="nb">-</span> <span class="mi">5</span><span class="p">))</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="mi">1</span>
+    <span class="p">(</span><span class="nb">1-</span> <span class="mi">0</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>and the result is -1.</p>
+
+<p>That was fun. Lots more to try though. I am planning to push this idea even
+further but maybe some other time.</p>
+
+<p>The code is available <a href="https://github.com/Nondv/experiments/blob/master/integer_expressions_in_haskell/code.hs">here</a>.</p>
+
+</div>
+<div class="is-size-5">
+  
+  
+  
+  <a class="haas-text-black" href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html&text=Implementing+integer+expressions+with+only+data+types+and+pattern+matching&hashtags=weirdprogramming" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a class="haas-text-black" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a class="haas-text-black" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Ffp%2Fimplementing-integer-expressions-with-only-data-types-and-pattern-matching.html" target="_blank"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+    </div>
+
+    <div id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a href="https://nondv.wtf" target="_blank">Dmitry Non</a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank"><img src="/img/made-with-bulma.png" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank"><img src="/img/jekyll-logo.png" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank"><img id="footer-github-logo" src="/img/github-logo.png" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>

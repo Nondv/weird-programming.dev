@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta itemprop="description" name="description" content="Programming blog with some weirdness to it." />
+
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/syntax-highlight.css">
+    <link rel="stylesheet" href="/css/other.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Weird programming</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-margin-left-5" href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div>
+  <a href="/fp/implementing-integer-expressions-with-only-data-types-and-pattern-matching.html">
+    <h1 class="title is-size-1">Implementing integer expressions with only data types and pattern matching</h1>
+  </a><div class="subtitle">Apr 6, 2020</div>
+
+  <div class="content">
+    <p><em>Inspired by <a href="/oop/implementing-numbers-in-pure-ruby.html">Implementing numbers in “pure” Ruby</a></em></p>
+
+<p>When I started working with <a href="https://elm-lang.org/">Elm programming language</a>
+I was amazed how simple and yet powerful the type system is. It’s just shocking
+how far you can go with with just having some symbols and type constructors.</p>
+
+<!-- Type constructors, in my perception, are merely [injective functions](https://en.wikipedia.org/wiki/Injective_function) -->
+<!-- that evaluate into some abstract data we don't, actually, care about (we care -->
+<!-- only about the function itself and its arguments). I guess, mathematicians would -->
+<!-- disagree with me but that's just how I perceive them to ease the understanding. -->
+
+<p>But how <em>really</em> far can we go? Well, I decided to test it out <em>starting with</em>
+implementing  integers and expressions with them. I decided to use Haskell for
+that. Its laziness may be useful.</p>
+
+<h1 id="ground-rules">Ground rules</h1>
+
+<ol>
+  <li>Nothing from standard library is being used</li>
+  <li>We can create and use data types</li>
+  <li>We can have <strong>only one</strong> function called <code class="highlighter-rouge">eval</code> for evaluating our
+expressions.</li>
+  <li>We can use pattern matching.</li>
+  <li>Ground rules can be broken only for the sake of testing the code. For
+example, printing to the console is fine.</li>
+</ol>
+
+
+  </div>
+  <div class="has-text-right">
+    <a class="button  is-link is-rounded is-outlined" href="/fp/implementing-integer-expressions-with-only-data-types-and-pattern-matching.html">
+      Continue reading &nbsp;
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  </div>
+</div>
+<hr class="hr"></hr><div>
+  <a href="/oop/functional-programming-meet-oop.html">
+    <h1 class="title is-size-1">Functional programming, meet OOP</h1>
+  </a><div class="subtitle">Mar 15, 2020</div>
+
+  <div class="content">
+    <p><em>Originally posted on <a href="https://medium.com/swlh/functional-programming-meet-oop-3dc12a14e38e">medium.com</a></em></p>
+
+<p>I enjoy experimenting with programming paradigms and trying out some interesting
+(to me) ideas (some things become posts, like this and that). Recently I decided
+to see if I can write object-oriented code in a functional language.</p>
+
+
+  </div>
+  <div class="has-text-right">
+    <a class="button  is-link is-rounded is-outlined" href="/oop/functional-programming-meet-oop.html">
+      Continue reading &nbsp;
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  </div>
+</div>
+<hr class="hr"></hr><div>
+  <a href="/fp/writing-a-small-web-service-with-ruby-rack-and-fp.html">
+    <h1 class="title is-size-1">Writing a small web service with Ruby, Rack, and functional programming</h1>
+  </a><div class="subtitle">Feb 16, 2020</div>
+
+  <div class="content">
+    <p><em>Originally posted on <a href="https://levelup.gitconnected.com/writing-a-small-web-service-with-ruby-rack-and-functional-programming-a16f802a19c0">medium.com</a></em></p>
+
+<p>I love Ruby. I also love object-oriented programming. However, nowadays
+functional programming is getting more and more attention. And that’s not
+surprising because the functional paradigm has a lot of advantages.</p>
+
+<p>Ruby, being a multi-paradigm language, allows us to write programs in a
+functional style. Let’s see if we can write a web application this way. Maybe we
+even end up inventing a web framework ;)</p>
+
+
+  </div>
+  <div class="has-text-right">
+    <a class="button  is-link is-rounded is-outlined" href="/fp/writing-a-small-web-service-with-ruby-rack-and-fp.html">
+      Continue reading &nbsp;
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  </div>
+</div>
+<hr class="hr"></hr><div>
+  <a href="/oop/implementing-numbers-in-pure-ruby.html">
+    <h1 class="title is-size-1">Implementing numbers in "pure" Ruby</h1>
+  </a><div class="subtitle">Jan 17, 2020</div>
+
+  <div class="content">
+    <p><em>Originaly posted in <a href="https://medium.com/carwow-product-engineering/implementing-numbers-in-pure-ruby-1d35ee53ee70">carwow blog on medium.com</a></em></p>
+
+<p>Object-Oriented Programming to me means that the system is divided into
+objects. An object is just an entity that has some state and some behaviour. You
+can make your object do something by sending it a message, hoping that it will
+understand you.</p>
+
+<p>For practical reasons, every language has some primitives; basic data types you
+can use to write your program. Even though Ruby is, supposedly, a pure OO
+language (everything is an object), it has some primitives nevertheless.</p>
+
+<p>For instance, numbers. They look like objects, they have methods and
+stuff. However, what are they really? 2 and 3 are different instances of the
+Integer class, so they are supposed to have a different state. But what is that
+state? Magic.</p>
+
+<p>Let’s try and implement numbers on our own, without magic. Just for fun.</p>
+
+
+  </div>
+  <div class="has-text-right">
+    <a class="button  is-link is-rounded is-outlined" href="/oop/implementing-numbers-in-pure-ruby.html">
+      Continue reading &nbsp;
+      <span class="icon">
+        <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  </div>
+</div>
+<hr class="hr"></hr>
+    </div>
+
+    <div id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a href="https://nondv.wtf" target="_blank">Dmitry Non</a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank"><img src="/img/made-with-bulma.png" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank"><img src="/img/jekyll-logo.png" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank"><img id="footer-github-logo" src="/img/github-logo.png" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>
