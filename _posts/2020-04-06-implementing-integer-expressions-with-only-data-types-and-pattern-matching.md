@@ -1,5 +1,5 @@
 ---
-title: Implementing integer expressions with only data types and pattern matching
+title: Implementing integer expressions in Haskell data types
 author_profile_url: https://nondv.wtf
 categories: [fp]
 tags: [haskell, functional programming, fp, data types, pattern matching]
