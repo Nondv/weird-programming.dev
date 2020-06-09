@@ -9,8 +9,10 @@ description: Implementing OOP in a functional programming language
 *Originally posted on [medium.com](https://medium.com/swlh/functional-programming-meet-oop-3dc12a14e38e)*
 
 I enjoy experimenting with programming paradigms and trying out some interesting
-(to me) ideas (some things become posts, like this and that). Recently I decided
-to see if I can write object-oriented code in a functional language.
+(to me) ideas (some things become posts, like
+[this]({%  post_url 2020-01-17-implementing-numbers-in-pure-ruby %}) and
+[that]({%  post_url 2020-02-16-writing-a-small-web-service-with-ruby-rack-and-fp %})).
+Recently I decided to see if I can write object-oriented code in a functional language.
 
 <!--more-->
 
