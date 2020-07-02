@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<meta itemprop="description" name="description" content="Post description" />
+<meta property="og:title" content="Sleep sort algorithm" />
+<meta property='og:site_name' content='Weird programming blog' />
+<meta property="og:url" content="https://weird-programming.dev/algorithms/sleep-sort.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2020-07-02" />
+  <meta property="article:author" content="https://url-to-the-author" />
+  <meta property="article:tag" content="sleep sort" />
+  <meta property="article:tag" content="sorting" />
+  <meta property="article:tag" content="algorithm" />
+  
+<meta name="theme-color" content="#4A4A4A"/>
+<link rel="apple-touch-icon" href="/img/icon-black.png" />
+
+
+    <!-- Bulma -->
+    <link rel="preload" href="/css/bulma.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/bulma.min.css"></noscript>
+    <!-- Syntax highlight  -->
+    <link rel="preload" href="/css/syntax-highlight/perldoc.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/syntax-highlight/perldoc.css"></noscript>
+    <!-- Custom shit and hacks -->
+    <link rel="preload" href="/css/other.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/other.css"></noscript>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Sleep sort algorithm</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="" href="/">
+      <figure class="image is-48x48 is-rounded has-margin-left-5">
+        <img src="/img/icon-black-64.png" alt="Weird programming" />
+      </figure>
+    </a>
+    <a class="navbar-item " href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank" rel="noopener">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Sleep sort algorithm</div>
+<div class="is-size-5">
+  
+  
+  
+  <a href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Falgorithms%2Fsleep-sort.html&text=Sleep+sort+algorithm&hashtags=weirdprogramming" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Falgorithms%2Fsleep-sort.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Falgorithms%2Fsleep-sort.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+<article class="content">
+  <p>Some time ago I was doing some small introductions to basic algorithms I learned
+back in school to my colleagues at carwow (just for fun).
+Some of them became <a href="https://medium.com/programming-basics">posts on medium</a>.</p>
+
+<p>After one of them a colleague told me about sleep sort algorithm. I think it’s
+ingenious and should be in a blog calling itself “weird programming”.</p>
+
+<!--more-->
+
+<h1 id="algorithm">Algorithm</h1>
+
+<p>The idea is simple and brilliant. Imagine you have a list of numbers you want to
+sort.</p>
+
+<ol>
+  <li>Create a separate thread for <em>every</em> element in the list.</li>
+  <li>In each thread for a corresponding number <code class="highlighter-rouge">x</code> sleep for <code class="highlighter-rouge">x</code> seconds.</li>
+  <li>After that print <code class="highlighter-rouge">x</code>.</li>
+</ol>
+
+<p>After every thread has finished you will have a sorted list printed out. This
+works because lesser <code class="highlighter-rouge">x</code>’s will be “asleep” for shorter periods of time.</p>
+
+<p>Obviously, you don’t have to sleep seconds and you don’t have to print them out,
+instead you could push them to stack or something.</p>
+
+<h1 id="clojure-implementation">Clojure implementation</h1>
+
+<div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">sleep-sort</span><span class="w"> </span><span class="p">[</span><span class="n">multiplier</span><span class="w"> </span><span class="n">coll</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">result-atom</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="p">[])</span><span class="w">
+        </span><span class="n">futures</span><span class="w"> </span><span class="p">(</span><span class="nb">doall</span><span class="w"> </span><span class="p">(</span><span class="nb">map</span><span class="w">
+                        </span><span class="o">#</span><span class="p">(</span><span class="nf">future</span><span class="w"> </span><span class="p">(</span><span class="nf">Thread/sleep</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="n">%</span><span class="w"> </span><span class="n">multiplier</span><span class="p">))</span><span class="w">
+                                 </span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">result-atom</span><span class="w"> </span><span class="nb">conj</span><span class="w"> </span><span class="n">%</span><span class="p">))</span><span class="w">
+                        </span><span class="n">coll</span><span class="p">))]</span><span class="w">
+    </span><span class="p">(</span><span class="nf">run!</span><span class="w"> </span><span class="nb">deref</span><span class="w"> </span><span class="n">futures</span><span class="p">)</span><span class="w">
+    </span><span class="o">@</span><span class="n">result-atom</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>With <code class="highlighter-rouge">multiplier</code> equal to 1000 the algorithm will sleep <code class="highlighter-rouge">x</code> seconds.</p>
+
+<p>Quite straightforward implementation, for data storage an
+<a href="https://clojure.org/reference/atoms">atom</a> is used. For threading I used
+<a href="https://clojuredocs.org/clojure.core/future">future</a>.</p>
+
+<p>The only weird thing here (imho) is the line <code class="highlighter-rouge">(run! deref futures)</code>. This is to
+make sure that all threads are finished before returning the value stored in the
+atom.</p>
+
+<h1 id="go-implementation">Go implementation</h1>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">sort</span><span class="p">(</span><span class="n">array</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="n">d</span> <span class="n">time</span><span class="o">.</span><span class="n">Duration</span><span class="p">)</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
+	<span class="n">result</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+	<span class="n">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="k">func</span><span class="p">(</span><span class="n">x</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
+			<span class="n">ch</span> <span class="o">&lt;-</span> <span class="n">x</span>
+		<span class="p">}(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;-</span><span class="n">ch</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">result</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Go is destined to be used as a concurrent procedural language. I really like
+this solution even though it’s incredibly wordy.</p>
+
+<p>The program just iterates over the array and creates a goroutine for each
+element. Each goroutine pushes valuess into the channel. Classic.</p>
+
+<p>We could also write the same code in Clojure, btw (using
+<a href="https://clojuredocs.org/clojure.core.async">core.async</a> library)</p>
+
+<h1 id="ruby-implementation">Ruby implementation</h1>
+
+<p>Ruby is my core skill so I couldn’t leave it out.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">sleep_sort</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">)</span>
+  <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="n">threads</span> <span class="o">=</span> <span class="n">array</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+    <span class="no">Thread</span><span class="p">.</span><span class="nf">new</span> <span class="k">do</span>
+      <span class="nb">sleep</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span>
+      <span class="n">result</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="n">threads</span><span class="p">.</span><span class="nf">each</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:join</span><span class="p">)</span>
+  <span class="n">result</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Yep, just a thread per number, pushing to an array, waiting until all threads
+are finished.</p>
+
+<p>Ruby doesn’t have a true parallelism though. It remains single-threaded. But
+since we use IO-blocking operation (sleep) the interpeter is able to switch
+between ruby threads.</p>
+
+<h1 id="performance-and-tuning">Performance and tuning</h1>
+
+<p>Unfortunately, this algorithm heavilly relies on input data limits.</p>
+
+<p>For example, we could make it faster by using multiplier of 100 instead
+of 1000. However, for large arrays we would have to understand that the last
+thread will be spawned much later than the first one.</p>
+
+<p>Another thing is the range the numbers are in. If your numbers are in 1..100
+than you would want to use a bigger multiplier. And the other way around, if
+your numbers are in 1000…1000000 you don’t need big ones.</p>
+
+<p>Also the solutions I wrote do not work with negative numbers. For them we could
+create a separate datastructure and join them later. Or we could juts use adding
+elements to beginning/end depending on the sign:)</p>
+
+<h1 id="final-thoughts">Final thoughts</h1>
+
+<p>This algorithm is completely impractical. However, I think the person who’s come
+up with it is a genius. It’s incredibly creative and resourceful. I wish I had a
+brain that can come up with something simple and cool as this.</p>
+
+</article>
+<div class="is-size-5">
+  
+  
+  
+  <a href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Falgorithms%2Fsleep-sort.html&text=Sleep+sort+algorithm&hashtags=weirdprogramming" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Falgorithms%2Fsleep-sort.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Falgorithms%2Fsleep-sort.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+    </div>
+
+    <footer id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a class="has-text-black" href="https://nondv.wtf" target="_blank" rel="noopener"><u>Dmitry Non</u></a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank" rel="noopener"><img src="/img/made-with-bulma.png" alt="bulma logo" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank" rel="noopener"><img src="/img/jekyll-logo.png" alt="jekyll logo" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank" rel="noopener"><img id="footer-github-logo" src="/img/github-logo.png" alt="Github logo" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>
