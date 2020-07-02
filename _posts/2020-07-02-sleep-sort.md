@@ -4,7 +4,7 @@ author_profile_url: https://url-to-the-author
 categories: [algorithms]
 tags: [sleep sort, sorting, algorithm]
 description: >-
-  Post description
+  Fun and creative concurrent sorting algorithm
 ---
 
 Some time ago I was doing some small introductions to basic algorithms I learned
