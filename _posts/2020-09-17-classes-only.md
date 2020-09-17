@@ -1,5 +1,5 @@
 ---
-title: Programming only in terms of classes
+title: Programming only with classes
 author_profile_url: https://nondv.wtf
 categories: [oop]
 tags: [ruby, oop, classes, object-oriented programming, pure oop]
