@@ -3,6 +3,11 @@ layout: default
 ---
 <div class="title is-1">{{page.title}}</div>
 {% include share-buttons.html %}
+
+{%- if page.img -%}
+  <img src='{{page.img}}' />
+{%- endif -%}
+
 <article class="content">
   {{content}}
 </article>

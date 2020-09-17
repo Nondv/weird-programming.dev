@@ -3,6 +3,7 @@ title: Programming only with classes
 author_profile_url: https://nondv.wtf
 categories: [oop]
 tags: [ruby, oop, classes, object-oriented programming, pure oop]
+img: /img/posts/caveman.png
 description: >-
   What we had an OOP language with NOTHING except classes and variables?
 ---
