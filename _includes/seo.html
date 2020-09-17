@@ -9,6 +9,9 @@
   {% if page.author_profile_url -%}
     <meta property="article:author" content="{{ page.author_profile_url }}" />
   {%- endif %}
+  {% if page.img -%}
+    <meta property="og:image" content="{{ page.img }}" />
+  {%- endif %}
   {% for tag in page.tags -%}
     <meta property="article:tag" content="{{ tag }}" />
   {% endfor -%}
