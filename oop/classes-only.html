@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<meta itemprop="description" name="description" content="What we had an OOP language with NOTHING except classes and variables?" />
+<meta property="og:title" content="Programming only in terms of classes" />
+<meta property='og:site_name' content='Weird programming blog' />
+<meta property="og:url" content="https://weird-programming.dev/oop/classes-only.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2020-09-17" />
+  <meta property="article:author" content="https://nondv.wtf" />
+  <meta property="article:tag" content="ruby" />
+  <meta property="article:tag" content="oop" />
+  <meta property="article:tag" content="classes" />
+  <meta property="article:tag" content="object-oriented programming" />
+  <meta property="article:tag" content="pure oop" />
+  
+<meta name="theme-color" content="#4A4A4A"/>
+<link rel="apple-touch-icon" href="/img/icon-black.png" />
+
+
+    <!-- Bulma -->
+    <link rel="preload" href="/css/bulma.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/bulma.min.css"></noscript>
+    <!-- Syntax highlight  -->
+    <link rel="preload" href="/css/syntax-highlight/perldoc.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/syntax-highlight/perldoc.css"></noscript>
+    <!-- Custom shit and hacks -->
+    <link rel="preload" href="/css/other.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/other.css"></noscript>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Programming only in terms of classes</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="" href="/">
+      <figure class="image is-48x48 is-rounded has-margin-left-5">
+        <img src="/img/icon-black-64.png" alt="Weird programming" />
+      </figure>
+    </a>
+    <a class="navbar-item " href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank" rel="noopener">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Programming only in terms of classes</div>
+<div class="is-size-5">
+  
+  
+  
+  <a href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fclasses-only.html&text=Programming+only+in+terms+of+classes&hashtags=weirdprogramming" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fclasses-only.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Foop%2Fclasses-only.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+<article class="content">
+  <p>In my post <a href="/oop/implementing-numbers-in-pure-ruby.html">Implementing numbers in “pure” Ruby</a>
+I established some ground rules that allowed us to use some basic ruby stuff
+like equality operator, booleans, <code class="highlighter-rouge">nil</code>, blocks and so on.</p>
+
+<p>But what if we had absolutely nothing, even basic operators
+like <code class="highlighter-rouge">if</code> and <code class="highlighter-rouge">while</code>? Get ready for some pure OOP-madness.</p>
+
+<!--more-->
+
+<h1 id="ground-rules">Ground rules</h1>
+
+<ul>
+  <li>We can define classes and methods.</li>
+  <li>We should assume that ruby doesn’t have any classes predefined. Imagine we
+start from scratch. Even stuff like <code class="highlighter-rouge">nil</code> is not available.</li>
+  <li>The only operator we can use is the assignment operator (<code class="highlighter-rouge">x = something</code>).</li>
+</ul>
+
+<h1 id="no-if-operator-seriously-even-cpus-have-it">No if-operator? Seriously? Even CPUs have it!</h1>
+
+<p>Conditionals are important. They are the very essence of logic for our
+programs. So how do we do without them? I’ve come up with a solution:
+we can incorporate boolean logic inside EVERY object.</p>
+
+<p>Think about it, in dynamic languages like Ruby logical expressions don’t
+actually need to evaluate into some “Boolean” class. Instead, they treat
+everything as true except for some special cases (<code class="highlighter-rouge">nil</code> and <code class="highlighter-rouge">false</code> in Ruby,
+<code class="highlighter-rouge">false</code>, <code class="highlighter-rouge">0</code> and <code class="highlighter-rouge">''</code> in JS). So incorporating this logic doesn’t seem that
+unnatural. But let’s dive right into it.</p>
+
+<h2 id="basic-classes">Basic classes</h2>
+
+<p>Let’s create a very basic class that will be the ancestor to everything we build
+in the future:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BaseObject</span>
+  <span class="k">def</span> <span class="nf">if_branching</span><span class="p">(</span><span class="n">then_val</span><span class="p">,</span> <span class="n">_else_val</span><span class="p">)</span>
+    <span class="n">then_val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The method inside is our logical foundation. As you can see, straight away we
+assume that any object is true so we return “then-branch”.</p>
+
+<p>What about false? Let’s start with null, actually.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NullObject</span> <span class="o">&lt;</span> <span class="no">BaseObject</span>
+  <span class="k">def</span> <span class="nf">if_branching</span><span class="p">(</span><span class="n">_then_val</span><span class="p">,</span> <span class="n">else_val</span><span class="p">)</span>
+    <span class="n">else_val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Same thing but it returns second parameter.</p>
+
+<p>In Ruby almost every class inherits from <code class="highlighter-rouge">Object</code> class. However, there’s
+another class called <code class="highlighter-rouge">BasicObject</code> which is even higher up in the
+hierarchy. Let’s copycat this style and introduce our alternative to <code class="highlighter-rouge">Object</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NormalObject</span> <span class="o">&lt;</span> <span class="no">BaseObject</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Now, everything we define later on should inerit from <code class="highlighter-rouge">NormalObject</code>. Later on
+we can add global helper methods there (like <code class="highlighter-rouge">#null?</code>).</p>
+
+<h2 id="if-expressions">If-expressions</h2>
+
+<p>This is enough for us to create our if-expressions:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">If</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">bool</span><span class="p">,</span> <span class="n">then_val</span><span class="p">,</span> <span class="n">else_val</span> <span class="o">=</span> <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+    <span class="vi">@result</span> <span class="o">=</span> <span class="n">bool</span><span class="p">.</span><span class="nf">if_branching</span><span class="p">(</span><span class="n">then_val</span><span class="p">,</span> <span class="n">else_val</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">result</span>
+    <span class="vi">@result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>And that’s it! I’m serious. It just works.</p>
+
+<p>Consider this example:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fries</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Ketchup</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">BurgerMeal</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">fries</span> <span class="o">=</span> <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+    <span class="vi">@fries</span> <span class="o">=</span> <span class="n">fries</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">sauce</span>
+    <span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vi">@fries</span><span class="p">,</span> <span class="no">Ketchup</span><span class="p">.</span><span class="nf">new</span><span class="p">).</span><span class="nf">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">BurgerMeal</span><span class="p">.</span><span class="nf">new</span><span class="p">.</span><span class="nf">sauce</span> <span class="c1"># ==&gt; NullObject</span>
+<span class="no">BurgerMeal</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Fries</span><span class="p">.</span><span class="nf">new</span><span class="p">).</span><span class="nf">sauce</span> <span class="c1"># ==&gt; Ketchup</span>
+</code></pre></div></div>
+
+<p>You may be wondering, how is that useful if we can’t pass any
+code blocks around. And what about the “laziness”?</p>
+
+<p>Consider this:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Pseudo-code</span>
+<span class="k">if</span> <span class="n">today_is_friday?</span>
+  <span class="n">order_beers</span><span class="p">()</span>
+<span class="k">else</span>
+  <span class="n">order_tea</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="c1"># Our If class</span>
+<span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">today_is_friday?</span><span class="p">,</span> <span class="n">order_beers</span><span class="p">(),</span> <span class="n">order_tea</span><span class="p">()).</span><span class="nf">result</span>
+</code></pre></div></div>
+
+<p>In our example we will order beers AND tea disregarding the day of the
+week. This is because arguments are evaluated <em>before</em> being passed to the
+constructor.</p>
+
+<p>This is very important because without it our programs would be incredibly
+inefficient and even invalid.</p>
+
+<p>The solution is to wrap a piece of code in another class. Later on I will refer
+to this kind of wrappers as “callable”:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">OrderBeers</span>
+  <span class="k">def</span> <span class="nf">call</span>
+    <span class="c1"># do something</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">OrderTea</span>
+  <span class="k">def</span> <span class="nf">call</span>
+    <span class="c1"># do something else</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">today_is_friday?</span><span class="p">,</span> <span class="no">OrderBeers</span><span class="p">.</span><span class="nf">new</span><span class="p">,</span> <span class="no">OrderTea</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+  <span class="p">.</span><span class="nf">result</span>
+  <span class="p">.</span><span class="nf">call</span>
+</code></pre></div></div>
+
+<p>As you can see, the actual behaviour is not being executed until we explicitly
+use <code class="highlighter-rouge">#call</code>. That’s it. This is how we can execute complex code with our <code class="highlighter-rouge">If</code>
+class.</p>
+
+<h2 id="booleans-just-because-we-can">Booleans (just because we can)</h2>
+
+<p>We already have logical values (nulls and everything else) but it would be nice
+for expressiveness to add explicit boolean values. Let’s do that:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Bool</span> <span class="o">&lt;</span> <span class="no">NormalObject</span><span class="p">;</span> <span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">TrueObject</span> <span class="o">&lt;</span> <span class="no">Bool</span><span class="p">;</span> <span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">FalseObject</span> <span class="o">&lt;</span> <span class="no">Bool</span>
+  <span class="k">def</span> <span class="nf">if_branching</span><span class="p">(</span><span class="n">_then_val</span><span class="p">,</span> <span class="n">else_val</span><span class="p">)</span>
+    <span class="n">else_val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Here we have an umbrella class called <code class="highlighter-rouge">Bool</code>, <code class="highlighter-rouge">TrueObject</code> with no
+implementation (any instance of this object is already considered true) and
+<code class="highlighter-rouge">FalseObject</code> that overrides <code class="highlighter-rouge">#if_branching</code> in the same way <code class="highlighter-rouge">NullObject</code> does.</p>
+
+<p>That’s it. We implemented booleans. I also added logical NOT operation for
+convenience:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BoolNot</span> <span class="o">&lt;</span> <span class="no">Bool</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="vi">@x</span> <span class="o">=</span> <span class="n">x</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">if_branching</span><span class="p">(</span><span class="n">then_val</span><span class="p">,</span> <span class="n">else_val</span><span class="p">)</span>
+    <span class="vi">@x</span><span class="p">.</span><span class="nf">if_branching</span><span class="p">(</span><span class="n">else_val</span><span class="p">,</span> <span class="n">then_val</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>As you can see, it just flips parameters for underlying object’s <code class="highlighter-rouge">#if_branching</code>
+method. Simple, yet incredibly useful.</p>
+
+<h2 id="loops">Loops</h2>
+
+<p>Okay, another important thing in programming languages is looping. We can
+achieve looping by using recursion. But let’s implement an explicit <code class="highlighter-rouge">While</code>
+operator.</p>
+
+<p>In general, the <code class="highlighter-rouge">while</code> operator looks like this:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="n">some_condition</span>
+  <span class="n">do_something</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Which could be described like this: “if condition is true, do this and repeat
+the cycle again”.</p>
+
+<p>The interesting thing to point out is that our condition should be dynamic - it
+should be able to change between iterations. “Callables” to the rescue!</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">While</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">callable_condition</span><span class="p">,</span> <span class="n">callable_body</span><span class="p">)</span>
+    <span class="vi">@cond</span> <span class="o">=</span> <span class="n">callable_condition</span>
+    <span class="vi">@body</span> <span class="o">=</span> <span class="n">callable_body</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">run</span>
+    <span class="n">is_condition_satisfied</span> <span class="o">=</span> <span class="vi">@cond</span><span class="p">.</span><span class="nf">call</span>
+    <span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">is_condition_satisfied</span><span class="p">,</span>
+           <span class="no">NextIteration</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="vi">@body</span><span class="p">),</span>
+           <span class="no">DoNothing</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+      <span class="p">.</span><span class="nf">result</span>
+      <span class="p">.</span><span class="nf">call</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Calls body and then runs While#run again.</span>
+  <span class="c1"># This way looping is done recursively (too bad no tail-call elimination)</span>
+  <span class="k">class</span> <span class="nc">NextIteration</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">while_obj</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+      <span class="vi">@while_obj</span> <span class="o">=</span> <span class="n">while_obj</span>
+      <span class="vi">@body</span> <span class="o">=</span> <span class="n">body</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="vi">@body</span><span class="p">.</span><span class="nf">call</span>
+      <span class="vi">@while_obj</span><span class="p">.</span><span class="nf">run</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">DoNothing</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h1 id="sample-program">Sample program</h1>
+
+<p>Let’s create some lists and a function that counts how many nulls in a given
+list.</p>
+
+<h2 id="list">List</h2>
+
+<p>Nothing special here:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">List</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+    <span class="vi">@head</span> <span class="o">=</span> <span class="n">head</span>
+    <span class="vi">@tail</span> <span class="o">=</span> <span class="n">tail</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">head</span>
+    <span class="vi">@head</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">tail</span>
+    <span class="vi">@tail</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>We also need a way to walk it (no <code class="highlighter-rouge">#each</code> + block this time!). Let’s create a
+class that will be handling it:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#</span>
+<span class="c1"># Can be used to traverse a list once.</span>
+<span class="c1">#</span>
+<span class="k">class</span> <span class="nc">ListWalk</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+    <span class="vi">@left</span> <span class="o">=</span> <span class="n">list</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">left</span>
+    <span class="vi">@left</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Returns current head and sets current to its tail.</span>
+  <span class="c1"># Returns null if the end is reached</span>
+  <span class="k">def</span> <span class="nf">next</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="no">HeadCallable</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="no">ReturnNull</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">result</span>
+             <span class="p">.</span><span class="nf">call</span>
+    <span class="vi">@left</span> <span class="o">=</span> <span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="no">TailCallable</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="no">ReturnNull</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+              <span class="p">.</span><span class="nf">result</span>
+              <span class="p">.</span><span class="nf">call</span>
+    <span class="n">head</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">finished?</span>
+    <span class="no">BoolNot</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">HeadCallable</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+      <span class="vi">@list</span> <span class="o">=</span> <span class="n">list</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="vi">@list</span><span class="p">.</span><span class="nf">head</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">TailCallable</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+      <span class="vi">@list</span> <span class="o">=</span> <span class="n">list</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="vi">@list</span><span class="p">.</span><span class="nf">tail</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">ReturnNull</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>I think the main logic is quite straightforward. We also needed some
+helper-runnables for <code class="highlighter-rouge">#head</code> and <code class="highlighter-rouge">#tail</code> to avoid null-pointer errors (even
+though our nulls aren’t actually nulls, we still risk calling a wrong method on
+them).</p>
+
+<h2 id="counter">Counter</h2>
+
+<p>This is just an increment that will be used for counting:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Counter</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@list</span> <span class="o">=</span> <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">inc</span>
+    <span class="vi">@list</span> <span class="o">=</span> <span class="no">List</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span><span class="p">,</span> <span class="vi">@list</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">IncCallable</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+      <span class="vi">@counter</span> <span class="o">=</span> <span class="n">counter</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="vi">@counter</span><span class="p">.</span><span class="nf">inc</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">inc_callable</span>
+    <span class="no">IncCallable</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>We don’t have any numbers and I decided not to waste time implementing them so I
+just used lists instead (see my post on implementing numbers
+<a href="/oop/implementing-numbers-in-pure-ruby.html">here</a>).</p>
+
+<p>An interesting thing to note is <code class="highlighter-rouge">#inc_callable</code> method. I think if we are to try
+and implement our own “language” with those basic classes, it could be a
+convention to add methods with <code class="highlighter-rouge">_callable</code> postfix to return a “callable”
+object. This is somewhat like passing functions around in functional
+programming.</p>
+
+<h2 id="counting-nulls-in-list">Counting nulls in list</h2>
+
+<p>First of all we need a null-check. We can incorporate it within <code class="highlighter-rouge">NormalObject</code>
+and <code class="highlighter-rouge">NullObject</code> as a helper <code class="highlighter-rouge">#null?</code> (similar to Ruby’s <code class="highlighter-rouge">#nil?</code>):</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NormalObject</span> <span class="o">&lt;</span> <span class="no">BaseObject</span>
+  <span class="k">def</span> <span class="nf">null?</span>
+    <span class="no">FalseObject</span><span class="p">.</span><span class="nf">new</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">NullObject</span> <span class="o">&lt;</span> <span class="no">BaseObject</span>
+  <span class="k">def</span> <span class="nf">null?</span>
+    <span class="no">TrueObject</span><span class="p">.</span><span class="nf">new</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Now we can finally implement our null-counter:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#</span>
+<span class="c1"># Returns a counter incremented once for each NullObject in a list</span>
+<span class="c1">#</span>
+<span class="k">class</span> <span class="nc">CountNullsInList</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+    <span class="vi">@list</span> <span class="o">=</span> <span class="n">list</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">call</span>
+    <span class="n">list_walk</span> <span class="o">=</span> <span class="no">ListWalk</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vi">@list</span><span class="p">)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="no">Counter</span><span class="p">.</span><span class="nf">new</span>
+
+    <span class="no">While</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">ListWalkNotFinished</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">list_walk</span><span class="p">),</span>
+              <span class="no">LoopBody</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">list_walk</span><span class="p">,</span> <span class="n">counter</span><span class="p">))</span>
+         <span class="p">.</span><span class="nf">run</span>
+
+    <span class="n">counter</span>
+  <span class="k">end</span>
+
+
+
+  <span class="k">class</span> <span class="nc">ListWalkNotFinished</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list_walk</span><span class="p">)</span>
+      <span class="vi">@list_walk</span> <span class="o">=</span> <span class="n">list_walk</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="no">BoolNot</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vi">@list_walk</span><span class="p">.</span><span class="nf">finished?</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">LoopBody</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+    <span class="k">class</span> <span class="nc">ReturnNull</span> <span class="o">&lt;</span> <span class="no">NormalObject</span>
+      <span class="k">def</span> <span class="nf">call</span>
+        <span class="no">NullObject</span><span class="p">.</span><span class="nf">new</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">list_walk</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
+      <span class="vi">@list_walk</span> <span class="o">=</span> <span class="n">list_walk</span>
+      <span class="vi">@counter</span> <span class="o">=</span> <span class="n">counter</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">call</span>
+      <span class="n">x</span> <span class="o">=</span> <span class="vi">@list_walk</span><span class="p">.</span><span class="nf">next</span>
+      <span class="no">If</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="nf">null?</span><span class="p">,</span> <span class="vi">@counter</span><span class="p">.</span><span class="nf">inc_callable</span><span class="p">,</span> <span class="no">ReturnNull</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">result</span>
+        <span class="p">.</span><span class="nf">call</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>And that’s it. We can pass any list to it and it will count how many nulls that
+list has.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Object-Oriented Programming is incredibly interesting concept and, apparently,
+very powerful. We’ve, essentially, built a programming language (!) by using
+only pure OOP with no additional operators. All we used was class definitions
+and variables. Another cool thing is that we have no primite literals in our
+language (e.g. we don’t have <code class="highlighter-rouge">null</code>, instead we just instantiate <code class="highlighter-rouge">NullObject</code>).
+Oh, wonders of programming…</p>
+
+<p>The code is available in my
+<a href="https://github.com/Nondv/experiments/tree/master/only_classes">experiments</a>
+repo.</p>
+
+</article>
+<div class="is-size-5">
+  
+  
+  
+  <a href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fclasses-only.html&text=Programming+only+in+terms+of+classes&hashtags=weirdprogramming" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Foop%2Fclasses-only.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Foop%2Fclasses-only.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+    </div>
+
+    <footer id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a class="has-text-black" href="https://nondv.wtf" target="_blank" rel="noopener"><u>Dmitry Non</u></a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank" rel="noopener"><img src="/img/made-with-bulma.png" alt="bulma logo" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank" rel="noopener"><img src="/img/jekyll-logo.png" alt="jekyll logo" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank" rel="noopener"><img id="footer-github-logo" src="/img/github-logo.png" alt="Github logo" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>
