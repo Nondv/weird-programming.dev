@@ -2,6 +2,7 @@
 title: Functional programming, meet OOP
 author_profile_url: https://nondv.wtf
 categories: [oop]
+img: /img/posts/bugs-handshake.png
 tags: [functional programming, object-oriented programming, fp, oop, clojure]
 description: Implementing OOP in a functional programming language
 ---

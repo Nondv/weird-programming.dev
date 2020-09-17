@@ -2,6 +2,7 @@
 title: Implementing integer expressions in Haskell data types
 author_profile_url: https://nondv.wtf
 categories: [fp]
+img: /img/posts/kids_math.png
 tags: [haskell, functional programming, fp, data types, pattern matching]
 description: >-
   Let's write our own integer expressions language using only data
@@ -23,6 +24,7 @@ But how *really* far can we go? Well, I decided to test it out *starting with*
 implementing  integers and expressions with them. I decided to use Haskell for
 that. Its laziness may be useful.
 
+<!--more-->
 
 # Ground rules
 
@@ -34,7 +36,6 @@ that. Its laziness may be useful.
 5. Ground rules can be broken only for the sake of testing the code. For
    example, printing to the console is fine.
 
-<!--more-->
 
 # Integer data type
 

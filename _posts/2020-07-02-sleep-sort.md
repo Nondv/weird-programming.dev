@@ -3,6 +3,7 @@ title: Sleep sort algorithm
 author_profile_url: https://url-to-the-author
 categories: [algorithms]
 tags: [sleep sort, sorting, algorithm]
+img: /img/posts/sleeping.png
 description: >-
   Fun and creative concurrent sorting algorithm
 ---
