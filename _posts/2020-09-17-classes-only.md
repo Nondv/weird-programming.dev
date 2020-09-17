@@ -485,7 +485,7 @@ list has.
 Object-Oriented Programming is incredibly interesting concept and, apparently,
 very powerful. We've, essentially, built a programming language (!) by using
 only pure OOP with no additional operators. All we used was class definitions
-and variables. Another cool thing is that we have no primite literals in our
+and variables. Another cool thing is that we have no primitive literals in our
 language (e.g. we don't have `null`, instead we just instantiate `NullObject`).
 Oh, wonders of programming...
 
