@@ -68,6 +68,46 @@
       <article>
   <div class="columns is-vcentered">
     <div class="column is-narrow">
+      <figure class="image is-128x128"><img src="/img/posts/lambda.svg"></figure>
+    </div>
+    <div class="column">
+      <a href="/javascript/fp/getting-rid-of-oop-in-js.html">
+        <h1 class="title is-size-1">Getting rid of OOP in Javascript with lodash/fp</h1>
+      </a>
+      <div class="subtitle"><time>9 Apr 2021</time></div>
+
+      <div class="content">
+        <p>One of the things I dislike about JavaScript is how it intertwines
+object-oriented paradigm with functional programming. Ironically, that’s also the
+thing that I do like about JS. I like that I have a choice and JS actually does
+allow you to write functional code that looks natural (as opposed to Ruby that
+doesn’t even have actual functions per se).</p>
+
+<p>However, the standard library in JavaScript is written in a OOP manner, meaning
+that you need to call methods on objects instead of using functions. This
+creates inconsistency when you write in functional style because you end up with
+code that uses both functions end methods: <code class="highlighter-rouge">getUsers(ids).map(userToJson)</code>.</p>
+
+<p>I’d much rather prefer to have a consistent function-oriented code. Lodash,
+defining a lot of commonly-used functions, basically provides functional
+alternative to JS methods from standard library.</p>
+
+
+      </div>
+      <div class="has-text-right">
+        <a class="button  is-link is-rounded is-outlined" href="/javascript/fp/getting-rid-of-oop-in-js.html">
+          Continue reading &nbsp;
+          <span class="icon">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</article>
+<hr class="hr"></hr><article>
+  <div class="columns is-vcentered">
+    <div class="column is-narrow">
       <figure class="image is-128x128"><img src="/img/posts/caveman.png"></figure>
     </div>
     <div class="column">

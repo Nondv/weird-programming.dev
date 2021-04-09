@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162786325-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-162786325-1');
+</script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<meta itemprop="description" name="description" content="Trying to make my code more consistent and to make it feel more FP-like." />
+<meta property="og:title" content="Getting rid of OOP in Javascript with lodash/fp" />
+<meta property='og:site_name' content='Weird programming blog' />
+<meta property="og:url" content="https://weird-programming.dev/javascript/fp/getting-rid-of-oop-in-js.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2021-04-09" />
+  <meta property="article:author" content="https://nondv.wtf" />
+  <meta property="og:image" content="/img/posts/lambda.svg" />
+  <meta property="article:tag" content="javascript" />
+  <meta property="article:tag" content="js" />
+  <meta property="article:tag" content="oop" />
+  <meta property="article:tag" content="fp" />
+  <meta property="article:tag" content="lodash" />
+  <meta property="article:tag" content="lodash/fp" />
+  
+<meta name="theme-color" content="#4A4A4A"/>
+<link rel="apple-touch-icon" href="/img/icon-black.png" />
+
+
+    <!-- Bulma -->
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <!-- Syntax highlight  -->
+    <link rel="stylesheet" href="/css/syntax-highlight/perldoc.css">
+    <!-- Custom shit and hacks -->
+    <link rel="stylesheet" href="/css/other.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Getting rid of OOP in Javascript with lodash/fp</title>
+  </head>
+  <body>
+    <nav id='navbar' class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="" href="/">
+      <figure class="image is-48x48 is-rounded has-margin-left-5">
+        <img src="/img/icon-black-64.png" alt="Weird programming" />
+      </figure>
+    </a>
+    <a class="navbar-item " href="/">
+      <strong class="is-family-code is-size-4">Weird programming</strong>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/about">About</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" href="https://github.com/Nondv/weird-programming.dev" target="_blank" rel="noopener">
+            <strong>Fork me on Github</strong>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+    <div class="container">
+      <div class="title is-1">Getting rid of OOP in Javascript with lodash/fp</div>
+<div class="is-size-5">
+  
+  
+  
+  <a href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Fjavascript%2Ffp%2Fgetting-rid-of-oop-in-js.html&text=Getting+rid+of+OOP+in+Javascript+with+lodash%2Ffp&hashtags=weirdprogramming" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Fjavascript%2Ffp%2Fgetting-rid-of-oop-in-js.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Fjavascript%2Ffp%2Fgetting-rid-of-oop-in-js.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+<img class='post-image' src='/img/posts/lambda.svg' alt='Post image' /><article class="content">
+  <p>One of the things I dislike about JavaScript is how it intertwines
+object-oriented paradigm with functional programming. Ironically, that’s also the
+thing that I do like about JS. I like that I have a choice and JS actually does
+allow you to write functional code that looks natural (as opposed to Ruby that
+doesn’t even have actual functions per se).</p>
+
+<p>However, the standard library in JavaScript is written in a OOP manner, meaning
+that you need to call methods on objects instead of using functions. This
+creates inconsistency when you write in functional style because you end up with
+code that uses both functions end methods: <code class="highlighter-rouge">getUsers(ids).map(userToJson)</code>.</p>
+
+<p>I’d much rather prefer to have a consistent function-oriented code. Lodash,
+defining a lot of commonly-used functions, basically provides functional
+alternative to JS methods from standard library.</p>
+
+<!--more-->
+
+<h1 id="what-is-lodash">What is lodash?</h1>
+
+<p>Basically, lodash is just a library that provides a lot of utility
+functions. Years ago JavaScript was in much worse shape than it is now so lodash
+(which was a fork of Underscore.js) filled in a lot of gaps in standard
+library.</p>
+
+<p>Nowadays a lot of functions in it seem obsolete with JS evolved so much over the
+years. But the reality is, the language is still a mess (for instance, are you
+aware of which version of the language your most recent webpack project uses?)
+and lodash is quite stable.</p>
+
+<p>Plus, even tho it gets better and better, JS still lacks a lot of useful
+functions, e.g. <code class="highlighter-rouge">orderBy</code>. Yes, in most cases those functions are really simple
+and anyone can implement them on their own. But the truth is, it’s good when you
+don’t have to write them by yourself all the time. Lodash collects them in one
+place; it’s stable; and it’s, most likely, already in your project even if you
+don’t use it directly.</p>
+
+<h1 id="what-is-lodashfp">What is lodash/fp?</h1>
+
+<p><a href="https://github.com/lodash/lodash/wiki/FP-Guide">Lodash/fp</a> provides the most of
+the original lodash functions but modified to promote functional style.</p>
+
+<p>For example, some functions have been aliased to more common (I guess?) names,
+e.g. <code class="highlighter-rouge">flow</code> was aliased to <code class="highlighter-rouge">pipe</code> (like pipe operator in Elixir, for example).</p>
+
+<p>Another thing is many (or all?) functions allow
+<a href="https://en.wikipedia.org/wiki/Currying">currying</a>. This is very nice because it
+allows you to write shorter and more expressive code.</p>
+
+<p>Also parameter order is different in lodash/fp. Now functional arguments come
+first and data arguments come last. For example, compare original lodash
+<code class="highlighter-rouge">map(arr, f)</code> with lodash/fp <code class="highlighter-rouge">map(f, arr)</code>.</p>
+
+<p>This was done to get the most out of currying. Compare:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// lodash</span>
+<span class="kd">const</span> <span class="nx">ageFilter</span> <span class="o">=</span> <span class="nx">users</span> <span class="o">=&gt;</span> <span class="nx">filter</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span> <span class="nx">u</span> <span class="o">=&gt;</span> <span class="nx">u</span><span class="p">.</span><span class="nx">age</span> <span class="o">&gt;</span> <span class="mi">18</span><span class="p">);</span>
+
+<span class="c1">// lodash/fp</span>
+<span class="kd">const</span> <span class="nx">ageFilter</span> <span class="o">=</span> <span class="nx">filter</span><span class="p">(</span><span class="nx">u</span> <span class="o">=&gt;</span> <span class="nx">u</span><span class="p">.</span><span class="nx">age</span> <span class="o">&gt;</span> <span class="mi">18</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h1 id="some-common-cases">Some common cases</h1>
+
+<h2 id="pipe-operator">Pipe operator</h2>
+
+<p>Pipe operator is a great way to express a computation because instead of a
+complicated expression involving lots of nested functions, you can write your
+computation as a list of transformations (functions) that are being called in
+order.</p>
+
+<p>Lodash doesn’t <em>really</em> define it however it has compose functions <code class="highlighter-rouge">flow</code> and
+<code class="highlighter-rouge">flowRight</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Simple</span>
+<span class="kd">const</span> <span class="nx">getBankByUserId</span> <span class="o">=</span> <span class="nx">id</span> <span class="o">=&gt;</span> <span class="nx">getUserBank</span><span class="p">(</span><span class="nx">getUser</span><span class="p">(</span><span class="nx">id</span><span class="p">));</span>
+<span class="kd">const</span> <span class="nx">bank</span> <span class="o">=</span> <span class="nx">getBankByUserId</span><span class="p">(</span><span class="nx">userId</span><span class="p">);</span>
+
+<span class="c1">// flowRight - most common function composition h(x) = f*g(x) = f(g(x))</span>
+<span class="c1">// it's also aliased to `compose` in lodash/fp</span>
+<span class="kd">const</span> <span class="nx">getBankByUserId</span> <span class="o">=</span> <span class="nx">flowRight</span><span class="p">([</span><span class="nx">getUserBank</span><span class="p">,</span> <span class="nx">getUser</span><span class="p">])</span>
+<span class="kd">const</span> <span class="nx">bank</span> <span class="o">=</span> <span class="nx">getBankByUserId</span><span class="p">(</span><span class="nx">userId</span><span class="p">);</span>
+
+<span class="c1">// flow - same as flowRight but in a reverse order</span>
+<span class="kd">const</span> <span class="nx">getBankByUserId</span> <span class="o">=</span> <span class="nx">flow</span><span class="p">([</span><span class="nx">getUser</span><span class="p">,</span> <span class="nx">getUserBank</span><span class="p">])</span>
+<span class="kd">const</span> <span class="nx">bank</span> <span class="o">=</span> <span class="nx">getBankByUserId</span><span class="p">(</span><span class="nx">userId</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Now, this is, basically, what a pipe operator would do, it composes functions
+but also calls the result with a value. So all we have to do is to call our
+composition:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// sendEmail(message, getContacts(getUser(getUserId(transaction))).email)</span>
+
+<span class="nx">flow</span><span class="p">([</span>
+  <span class="nx">getUserId</span><span class="p">,</span>
+  <span class="nx">getUser</span><span class="p">,</span>
+  <span class="nx">getContacts</span><span class="p">,</span>
+  <span class="nx">c</span> <span class="o">=&gt;</span> <span class="nx">sendEmail</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">email</span><span class="p">),</span>
+<span class="p">])(</span><span class="nx">transaction</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>I, personally, hate that the value we are transforming comes in the very
+end. What if there’re <em>a lot</em> of transformations? It’s not very nice to have the
+actual value so far down. I came up with a simple hack: call the function
+without arguments but the first function should return the value itself. Take a
+look at the final snippet:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">pipe</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/pipe</span><span class="dl">'</span>
+
+<span class="nx">pipe</span><span class="p">([</span>
+  <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">transaction</span><span class="p">,</span>
+  <span class="nx">getUserId</span><span class="p">,</span>
+  <span class="nx">getUser</span><span class="p">,</span>
+  <span class="nx">getContacts</span><span class="p">,</span>
+  <span class="nx">c</span> <span class="o">=&gt;</span> <span class="nx">sendEmail</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">email</span><span class="p">),</span>
+<span class="p">])();</span>
+</code></pre></div></div>
+
+<p>Here’s another hack for you. You can inject a console.log anywhere in the
+pipeline to see what’s going on after some step. Check the diff:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import pipe from 'lodash/fp/pipe'
+
+  pipe([
+    () =&gt; transaction,
+    getUserId,
+    getUser,
++   x =&gt; { console.log('USER:', x); return x },
+    getContacts,
+    c =&gt; sendEmail(message, c.email),
+  ])();
+</code></pre></div></div>
+
+<h2 id="collection-processing-map-reduce-filter-etc">Collection processing (map, reduce, filter, etc…)</h2>
+
+<p>As I’ve mentioned before, they are all curried and their parameters have a
+different order from their original <code class="highlighter-rouge">lodash</code> counterparts. However, if you have
+experience with functional languages (e.g. Clojure, Haskell, Elm) you will feel
+right at home.</p>
+
+<p>Just take look at the snippet:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">pipe</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/pipe</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">map</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/map</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">reduce</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/reduce</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">toPairs</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/toPairs</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">sortBy</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/sortBy</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">take</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/take</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">last</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/last</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">topFiveUserArtists</span> <span class="o">=</span> <span class="nx">pipe</span><span class="p">([</span>
+  <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">userId</span><span class="p">),</span>
+  <span class="nx">getUserSongs</span><span class="p">,</span>
+  <span class="nx">map</span><span class="p">(</span><span class="nx">song</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nx">song</span><span class="p">.</span><span class="nx">artist</span><span class="p">,</span> <span class="nx">getNumberOfPlays</span><span class="p">(</span><span class="nx">song</span><span class="p">,</span> <span class="nx">userId</span><span class="p">)]),</span>
+  <span class="nx">reduce</span><span class="p">((</span><span class="nx">obj</span><span class="p">,</span> <span class="p">([</span><span class="nx">artist</span><span class="p">,</span> <span class="nx">plays</span><span class="p">]))</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="p">...</span><span class="nx">obj</span><span class="p">,</span> <span class="p">[</span><span class="nx">artist</span><span class="p">]:</span> <span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">artist</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="nx">plays</span> <span class="p">}),</span> <span class="p">{}),</span>
+  <span class="nx">toPairs</span><span class="p">,</span>
+  <span class="nx">sortBy</span><span class="p">(</span><span class="nx">last</span><span class="p">),</span>
+  <span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">])();</span>
+</code></pre></div></div>
+
+<p>Another approach:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">pipe</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/pipe</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">groupBy</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/groupBy</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">sumBy</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/sumBy</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">mapValues</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/mapValues</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">toPairs</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/toPairs</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">sortBy</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/sortBy</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">take</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/take</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">last</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash/fp/last</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">topFiveUserArtists</span> <span class="o">=</span> <span class="nx">pipe</span><span class="p">([</span>
+  <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">userId</span><span class="p">),</span>
+  <span class="nx">getUserSongs</span><span class="p">,</span>
+  <span class="nx">groupBy</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">artist</span><span class="p">),</span>
+  <span class="nx">mapValues</span><span class="p">(</span><span class="nx">sumBy</span><span class="p">(</span><span class="nx">song</span> <span class="o">=&gt;</span> <span class="nx">getNumberOfPlays</span><span class="p">(</span><span class="nx">song</span><span class="p">,</span> <span class="nx">userId</span><span class="p">))),</span>
+  <span class="nx">toPairs</span><span class="p">,</span>
+  <span class="nx">sortBy</span><span class="p">(</span><span class="nx">last</span><span class="p">),</span>
+  <span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">])();</span>
+
+</code></pre></div></div>
+
+<p>I, personally, prefer the first one as it uses less specific functions and just
+relies on the essentials. But yeah, lodash has a lot of cool utility functions
+like <code class="highlighter-rouge">mapValues</code>. Also, I import each function separately. This is my personal
+preference and it, supposedly, reduces the bundle size when webpack has
+finished.</p>
+
+<h2 id="some-misc-utilities-with-js-analogs">Some misc. utilities (with JS analogs)</h2>
+
+<ul>
+  <li><code class="highlighter-rouge">range(a, b)</code> = <code class="highlighter-rouge">[...Array(b - a).keys()].map(i =&gt; a + i)</code></li>
+  <li><code class="highlighter-rouge">take(n, arr)</code> = <code class="highlighter-rouge">arr.slice(0, n)</code></li>
+  <li><code class="highlighter-rouge">isEqual(a, b)</code>. JS doesn’t have any alternatives included. It performs deep
+equality checks (meaning that it will compare objects and arrays value by
+value, not by reference).</li>
+  <li><code class="highlighter-rouge">isEmpty(coll)</code> = <code class="highlighter-rouge">coll.length == 0</code> for arrays but <code class="highlighter-rouge">isEmpty</code> is more powerful
+as it works with arrays, objects, sets, etc.</li>
+  <li><code class="highlighter-rouge">uniq(arr)</code> = <code class="highlighter-rouge">[...new Set(arr)]</code> but <code class="highlighter-rouge">uniq</code> also preserves order.</li>
+  <li><code class="highlighter-rouge">sortBy(f, arr)</code> = <code class="highlighter-rouge">[...arr].sort((a, b) =&gt; f(a) &lt; f(b) ? -1 : 1)</code> (<code class="highlighter-rouge">[...arr]</code>
+is for cloning).</li>
+  <li><code class="highlighter-rouge">tail(arr)</code> (careful, don’t confuse with <code class="highlighter-rouge">rest</code>) = <code class="highlighter-rouge">arr.slice(1)</code></li>
+</ul>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>By using this DSL we are able to get rid of the most object-oriented code. It
+becomes better-structured, more consistent, and even a bit safer (bc some
+standard JS methods are actually mutating data, e.g. <code class="highlighter-rouge">Array#sort</code>).</p>
+
+<p>For me personally the result code looks a lot like Clojure which I adore.</p>
+
+<p>Another advantage is that using a third-party library instead of the standard
+library frees you from runtime/language headache. You don’t have to think about
+your runtime or webpack having stuff implemented anymore.</p>
+
+<p>Plus, it provides solutions for many common use-cases. I, actually, get annoyed
+when I want to use some small utility function I or my teammate wrote but only
+to find out that it’s defined in a different  project and I have to copy-paste
+it from there.</p>
+
+<p>If you get your team consistently use a DSL like that, your whole codebase
+should become healthier (I <em>think</em>). Apparently, there’re other options apart
+from lodash.</p>
+
+</article>
+<div class="is-size-5">
+  
+  
+  
+  <a href="http://twitter.com/share?url=https%3A%2F%2Fweird-programming.dev%2Fjavascript%2Ffp%2Fgetting-rid-of-oop-in-js.html&text=Getting+rid+of+OOP+in+Javascript+with+lodash%2Ffp&hashtags=weirdprogramming" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+  <a href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fweird-programming.dev%2Fjavascript%2Ffp%2Fgetting-rid-of-oop-in-js.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-linkedin"></i></span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fweird-programming.dev%2Fjavascript%2Ffp%2Fgetting-rid-of-oop-in-js.html" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-facebook"></i></span></a>
+</div>
+
+
+<div class="commentbox"></div>
+<script src="https://unpkg.com/commentbox.io/dist/commentBox.min.js"></script>
+<script>
+  commentBox('5678613475098624-proj');
+</script>
+
+
+    </div>
+
+    <footer id="footer" class="has-background-grey-lighter">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        &copy; <a class="has-text-black" href="https://nondv.wtf" target="_blank" rel="noopener"><u>Dmitry Non</u></a>
+      </div>
+      <div class="column has-text-right">
+        <div>
+          <a href="https://bulma.io/" target="_blank" rel="noopener"><img src="/img/made-with-bulma.png" alt="bulma logo" width="128"/></a>
+        </div>
+        <div>
+          <a href="https://jekyllrb.com/" target="_blank" rel="noopener"><img src="/img/jekyll-logo.png" alt="jekyll logo" width="128"/></a>
+        </div>
+        <div>
+          Hosted on <a href="https://github.com" target="_blank" rel="noopener"><img id="footer-github-logo" src="/img/github-logo.png" alt="Github logo" width="128"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+</html>
