@@ -21,3 +21,7 @@
 .highlighter-rouge {
   color: black;
 }
+
+.post-image {
+  max-height: 400px;
+}
