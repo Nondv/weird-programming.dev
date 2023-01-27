@@ -101,8 +101,8 @@ even end up inventing a web framework ;)</p>
 
 <ol>
   <li>Lambdas. Lambdas everywhere</li>
-  <li>Arrays. We can use arrays and some methods from <code class="highlighter-rouge">Enumerable</code> like <code class="highlighter-rouge">#map</code>,
-<code class="highlighter-rouge">#reduce</code>, <code class="highlighter-rouge">#find</code>, <code class="highlighter-rouge">#select</code>, <code class="highlighter-rouge">#reject</code></li>
+  <li>Arrays. We can use arrays and some methods from <code class="language-plaintext highlighter-rouge">Enumerable</code> like <code class="language-plaintext highlighter-rouge">#map</code>,
+<code class="language-plaintext highlighter-rouge">#reduce</code>, <code class="language-plaintext highlighter-rouge">#find</code>, <code class="language-plaintext highlighter-rouge">#select</code>, <code class="language-plaintext highlighter-rouge">#reject</code></li>
   <li>Hashes. We can access values via [key] and use merge for modifying them
 (no mutations!)</li>
   <li>Keeping external dependencies (like rack utility functions) to a minimum.</li>
@@ -118,15 +118,15 @@ applications in Ruby.</p>
 <p>Rack is used by Rails and Sinatra. You can learn more about it here:
 https://github.com/rack/rack</p>
 
-<p>Rack expects an application to be an object with a <code class="highlighter-rouge">#call</code> method accepting <code class="highlighter-rouge">env</code>
+<p>Rack expects an application to be an object with a <code class="language-plaintext highlighter-rouge">#call</code> method accepting <code class="language-plaintext highlighter-rouge">env</code>
 (hash containing all the information about a request) and returning a 3-element
 tuple:</p>
 
-<p><code class="highlighter-rouge">[status_code, headers_hash, body_array]</code></p>
+<p><code class="language-plaintext highlighter-rouge">[status_code, headers_hash, body_array]</code></p>
 
 <p>(body array is usually a list of strings)</p>
 
-<p>This is great because it uses basic data structures and the <code class="highlighter-rouge">#call</code> method
+<p>This is great because it uses basic data structures and the <code class="language-plaintext highlighter-rouge">#call</code> method
 indicates that we can use a lambda/proc as an application.</p>
 
 <h1 id="setup">Setup</h1>
@@ -135,7 +135,7 @@ indicates that we can use a lambda/proc as an application.</p>
 
 <h2 id="gemfile">Gemfile</h2>
 
-<p>Generate a Gemfile with <code class="highlighter-rouge">bundle init</code> and add Rack to it.</p>
+<p>Generate a Gemfile with <code class="language-plaintext highlighter-rouge">bundle init</code> and add Rack to it.</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span> <span class="s2">"https://rubygems.org"</span>
 <span class="n">git_source</span><span class="p">(</span><span class="ss">:github</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">repo_name</span><span class="o">|</span> <span class="s2">"https://github.com/</span><span class="si">#{</span><span class="n">repo_name</span><span class="si">}</span><span class="s2">"</span> <span class="p">}</span>
@@ -145,7 +145,7 @@ indicates that we can use a lambda/proc as an application.</p>
 
 <h2 id="configru">config.ru</h2>
 
-<p><code class="highlighter-rouge">config.ru</code> is a script being run by <code class="highlighter-rouge">rackup</code> program shipping with Rack and
+<p><code class="language-plaintext highlighter-rouge">config.ru</code> is a script being run by <code class="language-plaintext highlighter-rouge">rackup</code> program shipping with Rack and
 starting a webserver.</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'rack/reloader'</span>
@@ -157,7 +157,7 @@ starting a webserver.</p>
 
 <p>Rack reloader will reload our application without restarting the server.</p>
 
-<p>We will also assume that our app source code will define the <code class="highlighter-rouge">APP</code> constant with
+<p>We will also assume that our app source code will define the <code class="language-plaintext highlighter-rouge">APP</code> constant with
 our app lambda. We also need to wrap it into another lambda or Rack won’t pick
 up changes to the constant.</p>
 
@@ -168,12 +168,12 @@ up changes to the constant.</p>
 <span class="no">APP</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{},</span> <span class="p">[</span><span class="n">env</span><span class="p">.</span><span class="nf">inspect</span><span class="p">]]</span> <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Now we can start the webserver with <code class="highlighter-rouge">bundle exec rackup</code>.
+<p>Now we can start the webserver with <code class="language-plaintext highlighter-rouge">bundle exec rackup</code>.
 It should be available on http://localhost:9292</p>
 
 <h1 id="routing">Routing</h1>
 
-<p>Let’s add a route for <code class="highlighter-rouge">/hello</code> showing “Hello world” message. Also, a 404 page.</p>
+<p>Let’s add a route for <code class="language-plaintext highlighter-rouge">/hello</code> showing “Hello world” message. Also, a 404 page.</p>
 
 <h2 id="handlers">Handlers</h2>
 
@@ -201,8 +201,8 @@ It should be available on http://localhost:9292</p>
 </code></pre></div></div>
 
 <p>We could also make a data type out of routes. For that, instead of explicitly
-writing them as pairs we should create a function <code class="highlighter-rouge">route(matcher, handler)</code> and
-getter functions <code class="highlighter-rouge">route_matcher(route)</code> and <code class="highlighter-rouge">route_handler(route)</code> . This way
+writing them as pairs we should create a function <code class="language-plaintext highlighter-rouge">route(matcher, handler)</code> and
+getter functions <code class="language-plaintext highlighter-rouge">route_matcher(route)</code> and <code class="language-plaintext highlighter-rouge">route_handler(route)</code> . This way
 the code becomes more flexible since it won’t know a lot about the data
 structure implementation. However, let’s keep it simple.</p>
 
@@ -226,14 +226,14 @@ structure implementation. However, let’s keep it simple.</p>
 
 <p>Let’s make users provide their name to greet them properly.</p>
 
-<p>For that, we need a <code class="highlighter-rouge">params</code> hash.</p>
+<p>For that, we need a <code class="language-plaintext highlighter-rouge">params</code> hash.</p>
 
 <h2 id="params-middleware">Params middleware</h2>
 
-<p>A middleware is just a wrapper over a handler that modifies the <code class="highlighter-rouge">env</code> or the
+<p>A middleware is just a wrapper over a handler that modifies the <code class="language-plaintext highlighter-rouge">env</code> or the
 result returned from it.</p>
 
-<p>Let’s create a middleware that adds <code class="highlighter-rouge">params</code> hash to <code class="highlighter-rouge">env</code> before handing it over to
+<p>Let’s create a middleware that adds <code class="language-plaintext highlighter-rouge">params</code> hash to <code class="language-plaintext highlighter-rouge">env</code> before handing it over to
 a handler.</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">query_to_params</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="p">{</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Utils</span><span class="p">.</span><span class="nf">parse_nested_query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="p">}</span>

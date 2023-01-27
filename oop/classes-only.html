@@ -86,10 +86,10 @@
 <img class='post-image' src='/img/posts/caveman.png' alt='Post image' /><article class="content">
   <p>In my post <a href="/oop/implementing-numbers-in-pure-ruby.html">Implementing numbers in “pure” Ruby</a>
 I established some ground rules that allowed us to use some basic ruby stuff
-like equality operator, booleans, <code class="highlighter-rouge">nil</code>, blocks and so on.</p>
+like equality operator, booleans, <code class="language-plaintext highlighter-rouge">nil</code>, blocks and so on.</p>
 
 <p>But what if we had absolutely nothing, even basic operators
-like <code class="highlighter-rouge">if</code> and <code class="highlighter-rouge">while</code>? Get ready for some pure OOP-madness.</p>
+like <code class="language-plaintext highlighter-rouge">if</code> and <code class="language-plaintext highlighter-rouge">while</code>? Get ready for some pure OOP-madness.</p>
 
 <!--more-->
 
@@ -98,8 +98,8 @@ like <code class="highlighter-rouge">if</code> and <code class="highlighter-roug
 <ul>
   <li>We can define classes and methods.</li>
   <li>We should assume that ruby doesn’t have any classes predefined. Imagine we
-start from scratch. Even stuff like <code class="highlighter-rouge">nil</code> is not available.</li>
-  <li>The only operator we can use is the assignment operator (<code class="highlighter-rouge">x = something</code>).</li>
+start from scratch. Even stuff like <code class="language-plaintext highlighter-rouge">nil</code> is not available.</li>
+  <li>The only operator we can use is the assignment operator (<code class="language-plaintext highlighter-rouge">x = something</code>).</li>
 </ul>
 
 <h1 id="no-if-operator-seriously-even-cpus-have-it">No if-operator? Seriously? Even CPUs have it!</h1>
@@ -110,8 +110,8 @@ we can incorporate boolean logic inside EVERY object.</p>
 
 <p>Think about it, in dynamic languages like Ruby logical expressions don’t
 actually need to evaluate into some “Boolean” class. Instead, they treat
-everything as true except for some special cases (<code class="highlighter-rouge">nil</code> and <code class="highlighter-rouge">false</code> in Ruby,
-<code class="highlighter-rouge">false</code>, <code class="highlighter-rouge">0</code> and <code class="highlighter-rouge">''</code> in JS). So incorporating this logic doesn’t seem that
+everything as true except for some special cases (<code class="language-plaintext highlighter-rouge">nil</code> and <code class="language-plaintext highlighter-rouge">false</code> in Ruby,
+<code class="language-plaintext highlighter-rouge">false</code>, <code class="language-plaintext highlighter-rouge">0</code> and <code class="language-plaintext highlighter-rouge">''</code> in JS). So incorporating this logic doesn’t seem that
 unnatural. But let’s dive right into it.</p>
 
 <h2 id="basic-classes">Basic classes</h2>
@@ -140,16 +140,16 @@ assume that any object is true so we return “then-branch”.</p>
 
 <p>Same thing but it returns second parameter.</p>
 
-<p>In Ruby almost every class inherits from <code class="highlighter-rouge">Object</code> class. However, there’s
-another class called <code class="highlighter-rouge">BasicObject</code> which is even higher up in the
-hierarchy. Let’s copycat this style and introduce our alternative to <code class="highlighter-rouge">Object</code>:</p>
+<p>In Ruby almost every class inherits from <code class="language-plaintext highlighter-rouge">Object</code> class. However, there’s
+another class called <code class="language-plaintext highlighter-rouge">BasicObject</code> which is even higher up in the
+hierarchy. Let’s copycat this style and introduce our alternative to <code class="language-plaintext highlighter-rouge">Object</code>:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NormalObject</span> <span class="o">&lt;</span> <span class="no">BaseObject</span>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>Now, everything we define later on should inerit from <code class="highlighter-rouge">NormalObject</code>. Later on
-we can add global helper methods there (like <code class="highlighter-rouge">#null?</code>).</p>
+<p>Now, everything we define later on should inerit from <code class="language-plaintext highlighter-rouge">NormalObject</code>. Later on
+we can add global helper methods there (like <code class="language-plaintext highlighter-rouge">#null?</code>).</p>
 
 <h2 id="if-expressions">If-expressions</h2>
 
@@ -234,7 +234,7 @@ to this kind of wrappers as “callable”:</p>
 </code></pre></div></div>
 
 <p>As you can see, the actual behaviour is not being executed until we explicitly
-use <code class="highlighter-rouge">#call</code>. That’s it. This is how we can execute complex code with our <code class="highlighter-rouge">If</code>
+use <code class="language-plaintext highlighter-rouge">#call</code>. That’s it. This is how we can execute complex code with our <code class="language-plaintext highlighter-rouge">If</code>
 class.</p>
 
 <h2 id="booleans-just-because-we-can">Booleans (just because we can)</h2>
@@ -253,9 +253,9 @@ for expressiveness to add explicit boolean values. Let’s do that:</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>Here we have an umbrella class called <code class="highlighter-rouge">Bool</code>, <code class="highlighter-rouge">TrueObject</code> with no
+<p>Here we have an umbrella class called <code class="language-plaintext highlighter-rouge">Bool</code>, <code class="language-plaintext highlighter-rouge">TrueObject</code> with no
 implementation (any instance of this object is already considered true) and
-<code class="highlighter-rouge">FalseObject</code> that overrides <code class="highlighter-rouge">#if_branching</code> in the same way <code class="highlighter-rouge">NullObject</code> does.</p>
+<code class="language-plaintext highlighter-rouge">FalseObject</code> that overrides <code class="language-plaintext highlighter-rouge">#if_branching</code> in the same way <code class="language-plaintext highlighter-rouge">NullObject</code> does.</p>
 
 <p>That’s it. We implemented booleans. I also added logical NOT operation for
 convenience:</p>
@@ -271,16 +271,16 @@ convenience:</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>As you can see, it just flips parameters for underlying object’s <code class="highlighter-rouge">#if_branching</code>
+<p>As you can see, it just flips parameters for underlying object’s <code class="language-plaintext highlighter-rouge">#if_branching</code>
 method. Simple, yet incredibly useful.</p>
 
 <h2 id="loops">Loops</h2>
 
 <p>Okay, another important thing in programming languages is looping. We can
-achieve looping by using recursion. But let’s implement an explicit <code class="highlighter-rouge">While</code>
+achieve looping by using recursion. But let’s implement an explicit <code class="language-plaintext highlighter-rouge">While</code>
 operator.</p>
 
-<p>In general, the <code class="highlighter-rouge">while</code> operator looks like this:</p>
+<p>In general, the <code class="language-plaintext highlighter-rouge">while</code> operator looks like this:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="n">some_condition</span>
   <span class="n">do_something</span>
@@ -355,7 +355,7 @@ list.</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>We also need a way to walk it (no <code class="highlighter-rouge">#each</code> + block this time!). Let’s create a
+<p>We also need a way to walk it (no <code class="language-plaintext highlighter-rouge">#each</code> + block this time!). Let’s create a
 class that will be handling it:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#</span>
@@ -415,7 +415,7 @@ class that will be handling it:</p>
 </code></pre></div></div>
 
 <p>I think the main logic is quite straightforward. We also needed some
-helper-runnables for <code class="highlighter-rouge">#head</code> and <code class="highlighter-rouge">#tail</code> to avoid null-pointer errors (even
+helper-runnables for <code class="language-plaintext highlighter-rouge">#head</code> and <code class="language-plaintext highlighter-rouge">#tail</code> to avoid null-pointer errors (even
 though our nulls aren’t actually nulls, we still risk calling a wrong method on
 them).</p>
 
@@ -452,16 +452,16 @@ them).</p>
 just used lists instead (see my post on implementing numbers
 <a href="/oop/implementing-numbers-in-pure-ruby.html">here</a>).</p>
 
-<p>An interesting thing to note is <code class="highlighter-rouge">#inc_callable</code> method. I think if we are to try
+<p>An interesting thing to note is <code class="language-plaintext highlighter-rouge">#inc_callable</code> method. I think if we are to try
 and implement our own “language” with those basic classes, it could be a
-convention to add methods with <code class="highlighter-rouge">_callable</code> postfix to return a “callable”
+convention to add methods with <code class="language-plaintext highlighter-rouge">_callable</code> postfix to return a “callable”
 object. This is somewhat like passing functions around in functional
 programming.</p>
 
 <h2 id="counting-nulls-in-list">Counting nulls in list</h2>
 
-<p>First of all we need a null-check. We can incorporate it within <code class="highlighter-rouge">NormalObject</code>
-and <code class="highlighter-rouge">NullObject</code> as a helper <code class="highlighter-rouge">#null?</code> (similar to Ruby’s <code class="highlighter-rouge">#nil?</code>):</p>
+<p>First of all we need a null-check. We can incorporate it within <code class="language-plaintext highlighter-rouge">NormalObject</code>
+and <code class="language-plaintext highlighter-rouge">NullObject</code> as a helper <code class="language-plaintext highlighter-rouge">#null?</code> (similar to Ruby’s <code class="language-plaintext highlighter-rouge">#nil?</code>):</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NormalObject</span> <span class="o">&lt;</span> <span class="no">BaseObject</span>
   <span class="k">def</span> <span class="nf">null?</span>
@@ -540,7 +540,7 @@ list has.</p>
 very powerful. We’ve, essentially, built a programming language (!) by using
 only pure OOP with no additional operators. All we used was class definitions
 and variables. Another cool thing is that we have no primitive literals in our
-language (e.g. we don’t have <code class="highlighter-rouge">null</code>, instead we just instantiate <code class="highlighter-rouge">NullObject</code>).
+language (e.g. we don’t have <code class="language-plaintext highlighter-rouge">null</code>, instead we just instantiate <code class="language-plaintext highlighter-rouge">NullObject</code>).
 Oh, wonders of programming…</p>
 
 <p>The code is available in my

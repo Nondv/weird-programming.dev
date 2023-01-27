@@ -94,7 +94,7 @@ doesn’t even have actual functions per se).</p>
 <p>However, the standard library in JavaScript is written in a OOP manner, meaning
 that you need to call methods on objects instead of using functions. This
 creates inconsistency when you write in functional style because you end up with
-code that uses both functions end methods: <code class="highlighter-rouge">getUsers(ids).map(userToJson)</code>.</p>
+code that uses both functions end methods: <code class="language-plaintext highlighter-rouge">getUsers(ids).map(userToJson)</code>.</p>
 
 <p>I’d much rather prefer to have a consistent function-oriented code. Lodash,
 defining a lot of commonly-used functions, basically provides functional
@@ -115,7 +115,7 @@ aware of which version of the language your most recent webpack project uses?)
 and lodash is quite stable.</p>
 
 <p>Plus, even tho it gets better and better, JS still lacks a lot of useful
-functions, e.g. <code class="highlighter-rouge">orderBy</code>. Yes, in most cases those functions are really simple
+functions, e.g. <code class="language-plaintext highlighter-rouge">orderBy</code>. Yes, in most cases those functions are really simple
 and anyone can implement them on their own. But the truth is, it’s good when you
 don’t have to write them by yourself all the time. Lodash collects them in one
 place; it’s stable; and it’s, most likely, already in your project even if you
@@ -127,7 +127,7 @@ don’t use it directly.</p>
 the original lodash functions but modified to promote functional style.</p>
 
 <p>For example, some functions have been aliased to more common (I guess?) names,
-e.g. <code class="highlighter-rouge">flow</code> was aliased to <code class="highlighter-rouge">pipe</code> (like pipe operator in Elixir, for example).</p>
+e.g. <code class="language-plaintext highlighter-rouge">flow</code> was aliased to <code class="language-plaintext highlighter-rouge">pipe</code> (like pipe operator in Elixir, for example).</p>
 
 <p>Another thing is many (or all?) functions allow
 <a href="https://en.wikipedia.org/wiki/Currying">currying</a>. This is very nice because it
@@ -135,7 +135,7 @@ allows you to write shorter and more expressive code.</p>
 
 <p>Also parameter order is different in lodash/fp. Now functional arguments come
 first and data arguments come last. For example, compare original lodash
-<code class="highlighter-rouge">map(arr, f)</code> with lodash/fp <code class="highlighter-rouge">map(f, arr)</code>.</p>
+<code class="language-plaintext highlighter-rouge">map(arr, f)</code> with lodash/fp <code class="language-plaintext highlighter-rouge">map(f, arr)</code>.</p>
 
 <p>This was done to get the most out of currying. Compare:</p>
 
@@ -155,8 +155,8 @@ complicated expression involving lots of nested functions, you can write your
 computation as a list of transformations (functions) that are being called in
 order.</p>
 
-<p>Lodash doesn’t <em>really</em> define it however it has compose functions <code class="highlighter-rouge">flow</code> and
-<code class="highlighter-rouge">flowRight</code>:</p>
+<p>Lodash doesn’t <em>really</em> define it however it has compose functions <code class="language-plaintext highlighter-rouge">flow</code> and
+<code class="language-plaintext highlighter-rouge">flowRight</code>:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Simple</span>
 <span class="kd">const</span> <span class="nx">getBankByUserId</span> <span class="o">=</span> <span class="nx">id</span> <span class="o">=&gt;</span> <span class="nx">getUserBank</span><span class="p">(</span><span class="nx">getUser</span><span class="p">(</span><span class="nx">id</span><span class="p">));</span>
@@ -206,7 +206,7 @@ look at the final snippet:</p>
 <p>Here’s another hack for you. You can inject a console.log anywhere in the
 pipeline to see what’s going on after some step. Check the diff:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import pipe from 'lodash/fp/pipe'
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import pipe from 'lodash/fp/pipe'
 
   pipe([
     () =&gt; transaction,
@@ -221,7 +221,7 @@ pipeline to see what’s going on after some step. Check the diff:</p>
 <h2 id="collection-processing-map-reduce-filter-etc">Collection processing (map, reduce, filter, etc…)</h2>
 
 <p>As I’ve mentioned before, they are all curried and their parameters have a
-different order from their original <code class="highlighter-rouge">lodash</code> counterparts. However, if you have
+different order from their original <code class="language-plaintext highlighter-rouge">lodash</code> counterparts. However, if you have
 experience with functional languages (e.g. Clojure, Haskell, Elm) you will feel
 right at home.</p>
 
@@ -271,31 +271,31 @@ right at home.</p>
 
 <p>I, personally, prefer the first one as it uses less specific functions and just
 relies on the essentials. But yeah, lodash has a lot of cool utility functions
-like <code class="highlighter-rouge">mapValues</code>. Also, I import each function separately. This is my personal
+like <code class="language-plaintext highlighter-rouge">mapValues</code>. Also, I import each function separately. This is my personal
 preference and it, supposedly, reduces the bundle size when webpack has
 finished.</p>
 
 <h2 id="some-misc-utilities-with-js-analogs">Some misc. utilities (with JS analogs)</h2>
 
 <ul>
-  <li><code class="highlighter-rouge">range(a, b)</code> = <code class="highlighter-rouge">[...Array(b - a).keys()].map(i =&gt; a + i)</code></li>
-  <li><code class="highlighter-rouge">take(n, arr)</code> = <code class="highlighter-rouge">arr.slice(0, n)</code></li>
-  <li><code class="highlighter-rouge">isEqual(a, b)</code>. JS doesn’t have any alternatives included. It performs deep
+  <li><code class="language-plaintext highlighter-rouge">range(a, b)</code> = <code class="language-plaintext highlighter-rouge">[...Array(b - a).keys()].map(i =&gt; a + i)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">take(n, arr)</code> = <code class="language-plaintext highlighter-rouge">arr.slice(0, n)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">isEqual(a, b)</code>. JS doesn’t have any alternatives included. It performs deep
 equality checks (meaning that it will compare objects and arrays value by
 value, not by reference).</li>
-  <li><code class="highlighter-rouge">isEmpty(coll)</code> = <code class="highlighter-rouge">coll.length == 0</code> for arrays but <code class="highlighter-rouge">isEmpty</code> is more powerful
+  <li><code class="language-plaintext highlighter-rouge">isEmpty(coll)</code> = <code class="language-plaintext highlighter-rouge">coll.length == 0</code> for arrays but <code class="language-plaintext highlighter-rouge">isEmpty</code> is more powerful
 as it works with arrays, objects, sets, etc.</li>
-  <li><code class="highlighter-rouge">uniq(arr)</code> = <code class="highlighter-rouge">[...new Set(arr)]</code> but <code class="highlighter-rouge">uniq</code> also preserves order.</li>
-  <li><code class="highlighter-rouge">sortBy(f, arr)</code> = <code class="highlighter-rouge">[...arr].sort((a, b) =&gt; f(a) &lt; f(b) ? -1 : 1)</code> (<code class="highlighter-rouge">[...arr]</code>
+  <li><code class="language-plaintext highlighter-rouge">uniq(arr)</code> = <code class="language-plaintext highlighter-rouge">[...new Set(arr)]</code> but <code class="language-plaintext highlighter-rouge">uniq</code> also preserves order.</li>
+  <li><code class="language-plaintext highlighter-rouge">sortBy(f, arr)</code> = <code class="language-plaintext highlighter-rouge">[...arr].sort((a, b) =&gt; f(a) &lt; f(b) ? -1 : 1)</code> (<code class="language-plaintext highlighter-rouge">[...arr]</code>
 is for cloning).</li>
-  <li><code class="highlighter-rouge">tail(arr)</code> (careful, don’t confuse with <code class="highlighter-rouge">rest</code>) = <code class="highlighter-rouge">arr.slice(1)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">tail(arr)</code> (careful, don’t confuse with <code class="language-plaintext highlighter-rouge">rest</code>) = <code class="language-plaintext highlighter-rouge">arr.slice(1)</code></li>
 </ul>
 
 <h1 id="conclusion">Conclusion</h1>
 
 <p>By using this DSL we are able to get rid of the most object-oriented code. It
 becomes better-structured, more consistent, and even a bit safer (bc some
-standard JS methods are actually mutating data, e.g. <code class="highlighter-rouge">Array#sort</code>).</p>
+standard JS methods are actually mutating data, e.g. <code class="language-plaintext highlighter-rouge">Array#sort</code>).</p>
 
 <p>For me personally the result code looks a lot like Clojure which I adore.</p>
 

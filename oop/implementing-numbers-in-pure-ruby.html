@@ -108,24 +108,24 @@ state? Magic.</p>
 <p>So, I came up with this set of constraints:</p>
 
 <ol>
-  <li>We can’t use any of the basic types except <code class="highlighter-rouge">nil</code>, <code class="highlighter-rouge">true</code>, and <code class="highlighter-rouge">false</code>.</li>
+  <li>We can’t use any of the basic types except <code class="language-plaintext highlighter-rouge">nil</code>, <code class="language-plaintext highlighter-rouge">true</code>, and <code class="language-plaintext highlighter-rouge">false</code>.</li>
   <li>No Stdlib (duh).</li>
   <li>Blocks are ok (just for some expressiveness, they won’t hurt).</li>
   <li>Using the equality operator for objects is ok. This is to check if two given
 object links point to the same object.</li>
   <li>Rules do not apply to tests because tests are just there to check if
 something works as intended.</li>
-  <li>Rules do not apply to the <code class="highlighter-rouge">#inspect</code> method since it serves only for
+  <li>Rules do not apply to the <code class="language-plaintext highlighter-rouge">#inspect</code> method since it serves only for
 demonstration purposes.</li>
 </ol>
 
 <p>Rule #1 is quite controversial. On the one hand, we are using magic
 primitives. On the other hand, I think that every program has to have logical
 expressions in order for it to be of any use. And we can’t have logical
-expressions without “falsey” entities (<code class="highlighter-rouge">nil</code> and <code class="highlighter-rouge">false</code>).</p>
+expressions without “falsey” entities (<code class="language-plaintext highlighter-rouge">nil</code> and <code class="language-plaintext highlighter-rouge">false</code>).</p>
 
-<p>I believe we don’t really need <code class="highlighter-rouge">true</code> and <code class="highlighter-rouge">false</code> because we can use <code class="highlighter-rouge">nil</code> for
-<code class="highlighter-rouge">false</code> and any object for <code class="highlighter-rouge">true</code>. However, why not? Just for expressiveness.</p>
+<p>I believe we don’t really need <code class="language-plaintext highlighter-rouge">true</code> and <code class="language-plaintext highlighter-rouge">false</code> because we can use <code class="language-plaintext highlighter-rouge">nil</code> for
+<code class="language-plaintext highlighter-rouge">false</code> and any object for <code class="language-plaintext highlighter-rouge">true</code>. However, why not? Just for expressiveness.</p>
 
 <h1 id="implementation-idea">Implementation idea</h1>
 
@@ -138,23 +138,23 @@ lecture.</p>
 
 <ol>
   <li>Some basic entity (it will represent zero in the natural numbers set).</li>
-  <li>Some function <code class="highlighter-rouge">next(x)</code> that returns the number after <code class="highlighter-rouge">x</code>.</li>
+  <li>Some function <code class="language-plaintext highlighter-rouge">next(x)</code> that returns the number after <code class="language-plaintext highlighter-rouge">x</code>.</li>
 </ol>
 
 <p>In set theory we can use:</p>
 
 <ol>
-  <li>Empty set <code class="highlighter-rouge">[]</code></li>
+  <li>Empty set <code class="language-plaintext highlighter-rouge">[]</code></li>
   <li>The function that returns a 1-element set containing its argument:
-<code class="highlighter-rouge">next(s) = [s]</code></li>
+<code class="language-plaintext highlighter-rouge">next(s) = [s]</code></li>
 </ol>
 
 <p>So our natural numbers are presented as:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">0 = []</code></li>
-  <li><code class="highlighter-rouge">1 = [[]]</code></li>
-  <li><code class="highlighter-rouge">2 = [[[]]]</code></li>
+  <li><code class="language-plaintext highlighter-rouge">0 = []</code></li>
+  <li><code class="language-plaintext highlighter-rouge">1 = [[]]</code></li>
+  <li><code class="language-plaintext highlighter-rouge">2 = [[[]]]</code></li>
   <li>…</li>
 </ul>
 
@@ -194,7 +194,7 @@ lists.</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>As you can see, I implemented <code class="highlighter-rouge">List</code> as a pair. The first element is some object
+<p>As you can see, I implemented <code class="language-plaintext highlighter-rouge">List</code> as a pair. The first element is some object
 and the second one is some other list. Notice that lists are immutable.</p>
 
 <p>I decided that every created node <strong>has to</strong> have a tail, except for the empty
@@ -205,8 +205,8 @@ use a hack, which I indicated with a comment.</p>
 implementation like this:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">0 = ()</code></li>
-  <li><code class="highlighter-rouge">1 = (())</code></li>
+  <li><code class="language-plaintext highlighter-rouge">0 = ()</code></li>
+  <li><code class="language-plaintext highlighter-rouge">1 = (())</code></li>
   <li>…</li>
 </ul>
 
@@ -227,7 +227,7 @@ bare minimum looks like this:</p>
 </code></pre></div></div>
 
 <p>But it’s no use to us. We can’t do anything with that. And what’s with all these
-<code class="highlighter-rouge">new(...)</code>? It’s completely impractical!</p>
+<code class="language-plaintext highlighter-rouge">new(...)</code>? It’s completely impractical!</p>
 
 <p>In order to make this class useful, we need to define some <em>behaviour</em>.</p>
 
@@ -235,7 +235,7 @@ bare minimum looks like this:</p>
 
 <h3 id="some-utility-before-we-start">Some utility before we start</h3>
 
-<p>Let’s add some helper methods to <code class="highlighter-rouge">List</code>:</p>
+<p>Let’s add some helper methods to <code class="language-plaintext highlighter-rouge">List</code>:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">List</span>
   <span class="k">def</span> <span class="nf">each</span>
@@ -266,11 +266,11 @@ bare minimum looks like this:</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>This is an interesting bit. Not everyone knows that <code class="highlighter-rouge">protected</code> in Ruby is
+<p>This is an interesting bit. Not everyone knows that <code class="language-plaintext highlighter-rouge">protected</code> in Ruby is
 different from the one in Java. In Java (and some other languages), protected
 methods are only accessible to child classes.</p>
 
-<p>In Ruby, <code class="highlighter-rouge">protected</code> means that this message can be sent from an object of the
+<p>In Ruby, <code class="language-plaintext highlighter-rouge">protected</code> means that this message can be sent from an object of the
 same class:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
@@ -307,7 +307,7 @@ level of one of them by the nesting level of the other:</p>
 
 <h3 id="multiplication">Multiplication</h3>
 
-<p>What does <code class="highlighter-rouge">n * 5</code> mean? It means that we are <em>adding</em> <code class="highlighter-rouge">n</code> with itself five
+<p>What does <code class="language-plaintext highlighter-rouge">n * 5</code> mean? It means that we are <em>adding</em> <code class="language-plaintext highlighter-rouge">n</code> with itself five
 times. We already have a plus operator. Let’s use it:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">*</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
@@ -376,7 +376,7 @@ But it may become useful:</p>
 <p>Okay, now we have defined basic operations. What next? How do we use them? I
 don’t want to initialize numbers with lists every time I need one.</p>
 
-<p>Well, the beauty of it is that by having the number <code class="highlighter-rouge">1</code> and the <code class="highlighter-rouge">+</code> operation, we
+<p>Well, the beauty of it is that by having the number <code class="language-plaintext highlighter-rouge">1</code> and the <code class="language-plaintext highlighter-rouge">+</code> operation, we
 can create any number we want without having to explicitly provide state:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">two</span> <span class="o">=</span> <span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ONE</span> <span class="o">+</span> <span class="no">NaturalNumber</span><span class="o">::</span><span class="no">ONE</span>
@@ -466,7 +466,7 @@ children!</p>
 
 <p>Let’s analyse what we’ve done so far. One of the things I found interesting is
 the number of methods inside our classes. It’s an interesting question if the
-class <code class="highlighter-rouge">IntegerNumber</code> has many responsibilities or not.</p>
+class <code class="language-plaintext highlighter-rouge">IntegerNumber</code> has many responsibilities or not.</p>
 
 <p>It really does have a lot of methods. Right now we are facing the “fat models”
 problem from Rails. What can we do? We can extract the behaviour to other
@@ -500,8 +500,8 @@ try a bit:</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>The problem here is that we actually have to make <code class="highlighter-rouge">#value</code> public. It’s
-interesting because, on the one hand, we want to make <code class="highlighter-rouge">IntegerNumber</code> just a
+<p>The problem here is that we actually have to make <code class="language-plaintext highlighter-rouge">#value</code> public. It’s
+interesting because, on the one hand, we want to make <code class="language-plaintext highlighter-rouge">IntegerNumber</code> just a
 data class, but, on the other hand, we don’t really want to expose its inner
 state since it’s so low-level. I guess we just have to make sacrifices or allow
 usage of send in Add and all similar classes.</p>

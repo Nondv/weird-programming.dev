@@ -98,12 +98,12 @@ sort.</p>
 
 <ol>
   <li>Create a separate thread for <em>every</em> element in the list.</li>
-  <li>In each thread for a corresponding number <code class="highlighter-rouge">x</code> sleep for <code class="highlighter-rouge">x</code> seconds.</li>
-  <li>After that print <code class="highlighter-rouge">x</code>.</li>
+  <li>In each thread for a corresponding number <code class="language-plaintext highlighter-rouge">x</code> sleep for <code class="language-plaintext highlighter-rouge">x</code> seconds.</li>
+  <li>After that print <code class="language-plaintext highlighter-rouge">x</code>.</li>
 </ol>
 
 <p>After every thread has finished you will have a sorted list printed out. This
-works because lesser <code class="highlighter-rouge">x</code>’s will be “asleep” for shorter periods of time.</p>
+works because lesser <code class="language-plaintext highlighter-rouge">x</code>’s will be “asleep” for shorter periods of time.</p>
 
 <p>Obviously, you don’t have to sleep seconds and you don’t have to print them out,
 instead you could push them to stack or something.</p>
@@ -120,13 +120,13 @@ instead you could push them to stack or something.</p>
     </span><span class="o">@</span><span class="n">result-atom</span><span class="p">))</span><span class="w">
 </span></code></pre></div></div>
 
-<p>With <code class="highlighter-rouge">multiplier</code> equal to 1000 the algorithm will sleep <code class="highlighter-rouge">x</code> seconds.</p>
+<p>With <code class="language-plaintext highlighter-rouge">multiplier</code> equal to 1000 the algorithm will sleep <code class="language-plaintext highlighter-rouge">x</code> seconds.</p>
 
 <p>Quite straightforward implementation, for data storage an
 <a href="https://clojure.org/reference/atoms">atom</a> is used. For threading I used
 <a href="https://clojuredocs.org/clojure.core/future">future</a>.</p>
 
-<p>The only weird thing here (imho) is the line <code class="highlighter-rouge">(run! deref futures)</code>. This is to
+<p>The only weird thing here (imho) is the line <code class="language-plaintext highlighter-rouge">(run! deref futures)</code>. This is to
 make sure that all threads are finished before returning the value stored in the
 atom.</p>
 

@@ -143,7 +143,7 @@ objects? How do I send messages between them? Well, let me quote Alan Kay again:
 on a network, only able to communicate with messages</p>
 </blockquote>
 
-<p>This gave me an idea of using parallelism. I called <code class="highlighter-rouge">some_object(state)</code> function
+<p>This gave me an idea of using parallelism. I called <code class="language-plaintext highlighter-rouge">some_object(state)</code> function
 “object loop” and decided to run it in a separate thread. The only mystery left
 so far is messaging.</p>
 
@@ -152,7 +152,7 @@ so far is messaging.</p>
 <p>In terms of messaging, I decided that we can just use
 <a href="https://en.wikipedia.org/wiki/Channel_(programming)">channels</a>
 (they seem to be incredibly popular in Go programming language). Then
-<code class="highlighter-rouge">receive_message()</code> would be just waiting for a message appearing in a channel
+<code class="language-plaintext highlighter-rouge">receive_message()</code> would be just waiting for a message appearing in a channel
 (message queue). Sounds easy enough.</p>
 
 <h1 id="language">Language</h1>
@@ -182,9 +182,9 @@ have classes; It emulates them, being prototype-oriented). Let’s start by
 implementing objects.</p>
 
 <p>So, what do we need for our object? So far I’ve mentioned “object loop” and
-channels. Also, we need <code class="highlighter-rouge">process_message(message)</code> function.</p>
+channels. Also, we need <code class="language-plaintext highlighter-rouge">process_message(message)</code> function.</p>
 
-<p>Clojure has its own implementation of channels in <code class="highlighter-rouge">clojure.core.async</code> library
+<p>Clojure has its own implementation of channels in <code class="language-plaintext highlighter-rouge">clojure.core.async</code> library
 so we will be using it. But first, we need to think of data-structure for
 representing our object. It’s simple, really:</p>
 
@@ -206,7 +206,7 @@ representing our object. It’s simple, really:</p>
       </span><span class="p">(</span><span class="nf">recur</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="n">next-state</span><span class="p">))))</span><span class="w">
 </span></code></pre></div></div>
 
-<p><code class="highlighter-rouge">async/&lt;!!</code> is just a function that waits for the message in a channel. A
+<p><code class="language-plaintext highlighter-rouge">async/&lt;!!</code> is just a function that waits for the message in a channel. A
 message handler is supposed to return next state or nil to stop the loop. Also,
 the message handler is supposed to accept the object itself (self), state and,
 of course, the message as arguments.</p>
@@ -226,7 +226,7 @@ object:</p>
 
 <p>Here we literally just start the loop and return a data structure for other code
 to communicate with that. And other code can communicate with the object by
-sending it a message via <code class="highlighter-rouge">send-msg</code>. <code class="highlighter-rouge">async/&gt;!!</code>, as you might guess, writes
+sending it a message via <code class="language-plaintext highlighter-rouge">send-msg</code>. <code class="language-plaintext highlighter-rouge">async/&gt;!!</code>, as you might guess, writes
 something to a channel.</p>
 
 <h2 id="using-objects">Using objects</h2>
@@ -236,7 +236,7 @@ builder.</p>
 
 <p>String builder is just an object that combines a bunch of strings together:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>builder = new StringBuilder
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>builder = new StringBuilder
 builder.add "Hello"
 builder.add " world"
 builder.build # ===&gt; "Hello world"
@@ -291,10 +291,10 @@ state. So how can we get some result from it? By using callbacks and promises.</
 a good design and I should have used promises right away instead. However, this
 is just for demonstration so sue me :)</p>
 
-<p><code class="highlighter-rouge">@result-promise</code> is fetching the result of a promise and if it’s not ready, it
+<p><code class="language-plaintext highlighter-rouge">@result-promise</code> is fetching the result of a promise and if it’s not ready, it
 waits for it (blocks the current thread).</p>
 
-<p>Now, <code class="highlighter-rouge">add-twice</code> is a bit more interesting, because it sends messages to
+<p>Now, <code class="language-plaintext highlighter-rouge">add-twice</code> is a bit more interesting, because it sends messages to
 self. One of the problems with this object design is that we can’t really call
 other methods from a method, because the object loop deals with one message at a
 time. So we can only work with other methods asynchronously. It’s just a
@@ -303,12 +303,12 @@ stuck.</p>
 
 <p>When I was testing it, I did something like this:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. call :add-twice with "ha" string
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. call :add-twice with "ha" string
 2. call :build and see if it equals "haha"
 </code></pre></div></div>
 
-<p>and it didn’t work. This is because <code class="highlighter-rouge">:build</code> message was sent <strong>before</strong>
-<code class="highlighter-rouge">:add-twice</code> sent <code class="highlighter-rouge">:add</code> messages (it’s a queue, remember?).</p>
+<p>and it didn’t work. This is because <code class="language-plaintext highlighter-rouge">:build</code> message was sent <strong>before</strong>
+<code class="language-plaintext highlighter-rouge">:add-twice</code> sent <code class="language-plaintext highlighter-rouge">:add</code> messages (it’s a queue, remember?).</p>
 
 <p>I spent quite a bit of time trying to understand what was wrong. That happened
 because I am not used to parallel programming and it is a very common
@@ -347,9 +347,9 @@ lazy so I will just dump the whole namespace here (apologies):</p>
 <p>So, a message to call a method is just a hashmap containing two things: method
 name and the arguments it should be called with.</p>
 
-<p>Also, take a look at <code class="highlighter-rouge">for-message</code> function. I am getting a bit ahead of myself
-but we will supply classes with hashmaps <code class="highlighter-rouge">name =&gt; method</code> containing
-methods. The function <code class="highlighter-rouge">execute</code> defines the way methods are executed — instead
+<p>Also, take a look at <code class="language-plaintext highlighter-rouge">for-message</code> function. I am getting a bit ahead of myself
+but we will supply classes with hashmaps <code class="language-plaintext highlighter-rouge">name =&gt; method</code> containing
+methods. The function <code class="language-plaintext highlighter-rouge">execute</code> defines the way methods are executed — instead
 of accepting message it accepts arguments so we don’t have to think about
 messages in our methods.</p>
 
@@ -378,15 +378,15 @@ messages in our methods.</p>
 
 <p>As you can see, I decided to create classes as objects. I didn’t have to,
 classes could be more abstract concept but I thought it’s just funnier this
-way. We could go even further and make <code class="highlighter-rouge">new-klass</code> function private and create
-an object <code class="highlighter-rouge">klass</code> instead that could create other classes via the method
-<code class="highlighter-rouge">:new</code>. It’s quite simple, actually, but I decided not to push it that far.</p>
+way. We could go even further and make <code class="language-plaintext highlighter-rouge">new-klass</code> function private and create
+an object <code class="language-plaintext highlighter-rouge">klass</code> instead that could create other classes via the method
+<code class="language-plaintext highlighter-rouge">:new</code>. It’s quite simple, actually, but I decided not to push it that far.</p>
 
 <p>Anyway, our klasses are just objects with a state containing methods,
 constructor (for initialising new instances) and a vector with instances. We
 don’t actually need the vector, but why not.</p>
 
-<p>Now, what is <code class="highlighter-rouge">instantiate</code> function serving as the method <code class="highlighter-rouge">:new</code>? Here it is:</p>
+<p>Now, what is <code class="language-plaintext highlighter-rouge">instantiate</code> function serving as the method <code class="language-plaintext highlighter-rouge">:new</code>? Here it is:</p>
 
 <div class="language-clojure highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">defn-</span><span class="w"> </span><span class="n">instantiate</span><span class="w"> </span><span class="p">[</span><span class="n">klass</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">promise-obj</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w">
   </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[{</span><span class="no">:keys</span><span class="w"> </span><span class="p">[</span><span class="n">constructor</span><span class="w"> </span><span class="n">method-map</span><span class="p">]}</span><span class="w"> </span><span class="n">state</span><span class="w">
@@ -460,7 +460,7 @@ merged in when instantiating a new class.</p>
 todo list item and CLI. You can see the code in the repo (the link is below). I
 will just say that it was quite straight-forward. Here’s the console output:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># add
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># add
 Title: Buy lots of toilet paper
 
 # add

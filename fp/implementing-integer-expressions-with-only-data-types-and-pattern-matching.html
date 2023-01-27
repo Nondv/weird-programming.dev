@@ -106,7 +106,7 @@ that. Its laziness may be useful.</p>
 <ol>
   <li>Nothing from standard library is being used</li>
   <li>We can create and use data types</li>
-  <li>We can have <strong>only one</strong> function called <code class="highlighter-rouge">eval</code> for evaluating our
+  <li>We can have <strong>only one</strong> function called <code class="language-plaintext highlighter-rouge">eval</code> for evaluating our
 expressions.</li>
   <li>We can use pattern matching.</li>
   <li>Ground rules can be broken only for the sake of testing the code. For
@@ -128,10 +128,10 @@ numbers and then create integers on top of them.</p>
 </code></pre></div></div>
 
 <p>Following <a href="https://en.wikipedia.org/wiki/Peano_axioms">Peano axioms</a> we just
-establish a zero and every other number will be <code class="highlighter-rouge">n+1</code>. This is like a list
+establish a zero and every other number will be <code class="language-plaintext highlighter-rouge">n+1</code>. This is like a list
 without data in it.</p>
 
-<p>Now, <code class="highlighter-rouge">deriving Show</code> just allows REPL to print values of this type. We need it
+<p>Now, <code class="language-plaintext highlighter-rouge">deriving Show</code> just allows REPL to print values of this type. We need it
 only to play around with values in the console. We will be adding it to every
 data type for this sake.</p>
 
@@ -147,15 +147,15 @@ data type for this sake.</p>
 </code></pre></div></div>
 
 <p>so, integer is just a pair of a sign and natural number. We could also
-do without <code class="highlighter-rouge">Sign</code> by doing something like</p>
+do without <code class="language-plaintext highlighter-rouge">Sign</code> by doing something like</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data IntNumber = Negative NaturalNumber
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data IntNumber = Negative NaturalNumber
                | Positive NaturalNumber
 </code></pre></div></div>
 
 <h1 id="expressions">Expressions</h1>
 
-<p>Now, numbers are good but how do we describe int expressions like <code class="highlighter-rouge">5 - (3 + 7)</code>?</p>
+<p>Now, numbers are good but how do we describe int expressions like <code class="language-plaintext highlighter-rouge">5 - (3 + 7)</code>?</p>
 
 <p>By introducing another data type, of course!</p>
 
@@ -192,23 +192,23 @@ do without <code class="highlighter-rouge">Sign</code> by doing something like</
 
 <p>If you go to haskell repl:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ghci
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ghci
 Prelude&gt; :load "code.hs"
 </code></pre></div></div>
 
-<p>and type <code class="highlighter-rouge">two</code> you will see something like:</p>
+<p>and type <code class="language-plaintext highlighter-rouge">two</code> you will see something like:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Inc (Inc (Val (IntNumber Plus Zero)))
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Inc (Inc (Val (IntNumber Plus Zero)))
 </code></pre></div></div>
 
 <p>True, that equals 2 but how do we get from that to</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IntNumber Plus (Next (Next Zero))
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IntNumber Plus (Next (Next Zero))
 </code></pre></div></div>
 
 <p>?</p>
 
-<p>Time to implement our function <code class="highlighter-rouge">eval</code> to evaluate expressions</p>
+<p>Time to implement our function <code class="language-plaintext highlighter-rouge">eval</code> to evaluate expressions</p>
 
 <div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="o">::</span> <span class="kt">Expression</span> <span class="o">-&gt;</span> <span class="kt">IntNumber</span>
 <span class="n">eval</span> <span class="p">(</span><span class="kt">Val</span> <span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span>
@@ -230,17 +230,17 @@ playing with expressions:</p>
 <span class="n">eval_num</span> <span class="o">=</span> <span class="n">to_num</span> <span class="o">.</span> <span class="n">eval</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">to_num</code> will convert our own integers into haskell integers. This way instead
+<p><code class="language-plaintext highlighter-rouge">to_num</code> will convert our own integers into haskell integers. This way instead
 of long unreadable line</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IntNumber Plus (Next (Next (Next (Next (Next Zero)))))
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IntNumber Plus (Next (Next (Next (Next (Next Zero)))))
 </code></pre></div></div>
 
-<p>we will see just <code class="highlighter-rouge">5</code>. <code class="highlighter-rouge">eval_num</code> is just a shortcut for <code class="highlighter-rouge">to_num (eval ...)</code>.</p>
+<p>we will see just <code class="language-plaintext highlighter-rouge">5</code>. <code class="language-plaintext highlighter-rouge">eval_num</code> is just a shortcut for <code class="language-plaintext highlighter-rouge">to_num (eval ...)</code>.</p>
 
 <h2 id="if">If</h2>
 
-<p>Let’s start with <code class="highlighter-rouge">If</code> (no particular reason, I just like it the most):</p>
+<p>Let’s start with <code class="language-plaintext highlighter-rouge">If</code> (no particular reason, I just like it the most):</p>
 
 <div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kr">_</span> <span class="kt">Zero</span><span class="p">))</span> <span class="kr">_</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="n">expr2</span>
 <span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Val</span> <span class="kr">_</span><span class="p">)</span> <span class="n">expr1</span> <span class="kr">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="n">expr1</span>
@@ -252,7 +252,7 @@ zero as false and anything else as true (we could do it the other way around,
 that’s not important).</p>
 
 <p>In the first line we match our condition with just a value of zero (the sign
-doesn’t matter so we put wildcard <code class="highlighter-rouge">_</code> on it). If we have zero, we just evaluate
+doesn’t matter so we put wildcard <code class="language-plaintext highlighter-rouge">_</code> on it). If we have zero, we just evaluate
 the second expression (“else” branch).</p>
 
 <p>The second line says “for any other number evaluate the first (‘then’) branch”.</p>
@@ -260,7 +260,7 @@ the second expression (“else” branch).</p>
 <p>If the condition is not a simple number, we need to evaluate it first so we put
 our expression back with condition evaluated.</p>
 
-<p>Cool? I think so. Let’s do <code class="highlighter-rouge">Neg</code> next. It’s simple.</p>
+<p>Cool? I think so. Let’s do <code class="language-plaintext highlighter-rouge">Neg</code> next. It’s simple.</p>
 
 <h2 id="neg--negative-value">Neg – negative value</h2>
 
@@ -271,7 +271,7 @@ our expression back with condition evaluated.</p>
 
 <p>Here we just flip around the sign. Nothing fancy.</p>
 
-<p>Note the third expression. We follow the same pattern as we did with <code class="highlighter-rouge">If</code> -
+<p>Note the third expression. We follow the same pattern as we did with <code class="language-plaintext highlighter-rouge">If</code> -
 first we simplify the inner expression and then we follow the logic. This
 pattern will appear a lot so I will not comment on it every time.</p>
 
@@ -288,7 +288,7 @@ operation. Let’s implement it:</p>
 <span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="n">expr</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">Inc</span> <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="n">eval</span> <span class="n">expr</span><span class="p">)))</span>
 </code></pre></div></div>
 
-<p>The first line is concerned with zeroes and is similar to the one in <code class="highlighter-rouge">If</code>.</p>
+<p>The first line is concerned with zeroes and is similar to the one in <code class="language-plaintext highlighter-rouge">If</code>.</p>
 
 <p>The second line is for the simplest case of positive numbers. We just increment
 the natural number.</p>
@@ -297,7 +297,7 @@ the natural number.</p>
 numbers. What happens to a negative number when we add one to it? Its absolute
 value (natural number) gets decreased by one. We can’t express -1 operation in
 terms of data but pattern matching allows us to destructure the data.
-So <code class="highlighter-rouge">n = (Next n_minus_one) =&gt; (Dec n) = n_minus_one</code>.</p>
+So <code class="language-plaintext highlighter-rouge">n = (Next n_minus_one) =&gt; (Dec n) = n_minus_one</code>.</p>
 
 <p>So elegant &lt;3.</p>
 
@@ -344,19 +344,19 @@ around.</p>
 <p>In our “language” it’s quite easy to define comparison operators, because we
 have numbers instead of booleans.</p>
 
-<p>If we substruct <code class="highlighter-rouge">x</code> from <code class="highlighter-rouge">x</code> the result will be zero. We can use that:</p>
+<p>If we substruct <code class="language-plaintext highlighter-rouge">x</code> from <code class="language-plaintext highlighter-rouge">x</code> the result will be zero. We can use that:</p>
 
 <div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval</span> <span class="p">(</span><span class="kt">Equal</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span> <span class="o">=</span> <span class="n">eval</span> <span class="p">(</span><span class="kt">If</span> <span class="p">(</span><span class="kt">Sub</span> <span class="n">expr1</span> <span class="n">expr2</span><span class="p">)</span>
                                  <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="kt">Zero</span><span class="p">))</span>
                                  <span class="p">(</span><span class="kt">Val</span> <span class="p">(</span><span class="kt">IntNumber</span> <span class="kt">Plus</span> <span class="p">(</span><span class="kt">Next</span> <span class="kt">Zero</span><span class="p">))))</span>
 </code></pre></div></div>
 
-<p>If expression! So beautiful! We could also use <code class="highlighter-rouge">let</code> to name the branches
-<code class="highlighter-rouge">false</code> and <code class="highlighter-rouge">true</code> respectively.</p>
+<p>If expression! So beautiful! We could also use <code class="language-plaintext highlighter-rouge">let</code> to name the branches
+<code class="language-plaintext highlighter-rouge">false</code> and <code class="language-plaintext highlighter-rouge">true</code> respectively.</p>
 
 <h2 id="isneg--negativity-check">IsNeg – negativity check</h2>
 
-<p>Before we move on to <code class="highlighter-rouge">&gt;</code> and <code class="highlighter-rouge">&lt;</code> operators I’d like to introduce this predicate.
+<p>Before we move on to <code class="language-plaintext highlighter-rouge">&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;</code> operators I’d like to introduce this predicate.
 It will be helpful to us because other comparison operators will use the same
 substraction idea.</p>
 
@@ -372,8 +372,8 @@ anything else (1 in this case).</p>
 
 <h2 id="greater-and-lower-comparison-operators">Greater and Lower comparison operators</h2>
 
-<p>If we substruct <code class="highlighter-rouge">b</code> from <code class="highlighter-rouge">a</code> the sign of the result will tell us how they
-compare to each other. If <code class="highlighter-rouge">a</code> is greater, a positive number will be returned,
+<p>If we substruct <code class="language-plaintext highlighter-rouge">b</code> from <code class="language-plaintext highlighter-rouge">a</code> the sign of the result will tell us how they
+compare to each other. If <code class="language-plaintext highlighter-rouge">a</code> is greater, a positive number will be returned,
 otherwise, negative.</p>
 
 <p>Lower is just a different direction. Tomayto, tomahto.</p>
@@ -384,7 +384,7 @@ otherwise, negative.</p>
 
 <h2 id="more">More?</h2>
 
-<p>We could also implement logical operators <code class="highlighter-rouge">And</code>, <code class="highlighter-rouge">Or</code> and <code class="highlighter-rouge">Xor</code>. But they are
+<p>We could also implement logical operators <code class="language-plaintext highlighter-rouge">And</code>, <code class="language-plaintext highlighter-rouge">Or</code> and <code class="language-plaintext highlighter-rouge">Xor</code>. But they are
 quite straightforward so I can’t be bothered.</p>
 
 <h1 id="conclusion">Conclusion</h1>
